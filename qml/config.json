@@ -1,0 +1,8 @@
+{
+    "title": "QT_FileClient",
+    "identifier": "com.yourcompany.wizardMDVAP.QTFileClient",
+    "orientation": "auto",
+    "versioncode": 1,
+    "versionname": "1.0",
+    "stage": "test"
+}
