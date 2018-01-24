@@ -8,6 +8,10 @@ ListPage {
     title: qsTr("File Client")
     property  var filepatch: "NULL"
 
+    uploadfile {
+        id: uploadfile
+    }
+
     FileDialog {
         id: fileDialog
         title: "Please choose a file"
@@ -41,7 +45,7 @@ ListPage {
         id: container
 
         rightOption: AppButton {
-            text: qsTr("Delete")
+            text: qsTr("upload")
 
             onClicked: {
                 container.hideOptions()
@@ -51,6 +55,8 @@ ListPage {
                 masterPage.modelChanged()
             }
         }
+
+
 
         SimpleRow {
             onSelected: {

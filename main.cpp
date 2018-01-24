@@ -4,17 +4,30 @@
 #include <QNetworkAccessManager>
 
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
+#include "uploadfile.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     VPApplication vplay;
 
+    uploadFile *upfile = new uploadFile();
+
+    //const char *uri = "fileclient";
+    //qRegisterMetaType<uploadFile>("uploadFile");
+    //qmlRegisterType<uploadFile>(uri, 1, 0, "uploadFile");
+
     // Use platform-specific fonts instead of V-Play's default font
     vplay.setPreservePlatformFonts(true);
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("uploadfile", upfile);
+
+
     vplay.initialize(&engine);
 
     // use this during development
