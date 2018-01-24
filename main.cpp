@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <VPApplication>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
 
 #include <QQmlApplicationEngine>
 

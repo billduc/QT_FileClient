@@ -1,19 +1,37 @@
 import VPlayApps 1.0
-import QtQuick 2.0
-
+import QtQuick 2.2
+import QtQuick.Dialogs 1.0
 
 ListPage {
     id: masterPage
 
-    title: qsTr("Master")
+    title: qsTr("File Client")
+    property  var filepatch: "NULL"
+
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        onAccepted: {
+            console.log("You chose: " + fileDialog.fileUrls)
+            filepatch = fileDialog.fileUrl;
+            fileDialog.close()
+            masterPage.model.push({ text: filepatch })
+            masterPage.modelChanged()
+        }
+        onRejected: {
+            console.log("Canceled")
+            fileDialog.close()
+        }
+        //Component.onCompleted: visible = true
+    }
 
     rightBarItem: IconButtonBarItem {
         icon: IconType.plus
 
         onClicked: {
             // Add a new item and notify listview model
-            masterPage.model.push({ text: new Date() })
-            masterPage.modelChanged()
+            fileDialog.open()
         }
     }
 
