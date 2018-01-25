@@ -1,5 +1,9 @@
 #include "uploadfile.h"
 
+extern "C"
+{
+    int initConnnectC(std::string host, int port);
+}
 UploadFile::UploadFile(QObject *parent) : QObject(parent)
 {
 
@@ -9,7 +13,7 @@ void UploadFile::doAction(){
     std::cout << "test function c++" << std::endl;
 }
 
-int UploadFile::initConnnect(std::string host, int port){
+int initConnnectC(std::string host, int port){
     int socketfd;
     struct hostent *server;
     struct sockaddr_in serv_addr;
@@ -40,9 +44,54 @@ int UploadFile::initConnnect(std::string host, int port){
         return EXIT_FAILURE;
     }
 
+
+    std::cout <<"@Server connected" << std::endl;
+
+    return socketfd;
+
 }
 
-bool UploadFile::upFile(std::string filename)
+int  UploadFile::initConnnect(std::string host, int port)
 {
+    return  initConnnectC(host, port);
+}
 
+bool UploadFile::upFile(QString filename)
+{
+   filename.remove(0,7);
+   std::cout << filename.toStdString() << std::endl;
+
+   int fd;
+   fd =  initConnnect("172.16.80.25",443);
+   char buffer[12345];
+
+   if (fd < 0){
+        std::cerr <<"cannot establish connection to server" << std::endl;
+        return false;
+   } else {
+        FILE * fp = fopen(filename.toStdString().c_str(), "r");
+
+        if (fp == NULL){
+            std::cerr << "Cannot open file" << std::endl;
+        } else {
+            bzero( buffer, sizeof buffer);
+            int fs_block_size;
+
+            while (fs_block_size = fread(buffer, sizeof(char), sizeof(buffer), fp ) > 0 ){
+                std::cout << "send file " << fs_block_size << std::endl;
+                if (send(fd, buffer, fs_block_size,0) < 0){
+                    std::cerr << "ERROR: Fail to send file\n" << std::endl;
+                    break;
+                }
+                bzero(buffer, sizeof(buffer));
+            }
+
+            std::cout << "Done!!!!" << std::endl;
+
+            long FileSize = ftell(fp);
+
+            std::cout <<"file size: " <<  FileSize << std::endl;
+        }
+        return true;
+   }
 }

@@ -24,10 +24,11 @@ public:
 
 signals:
 
-public slots:
+private:
     int initConnnect(std::string host, int port);
-    bool upFile(std::string filename);
 
+public slots:
+    bool upFile(QString filename);
     void doAction();
 };
 

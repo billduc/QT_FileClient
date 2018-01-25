@@ -49,12 +49,12 @@ ListPage {
             text: qsTr("upload")
 
             onClicked: {
-                uploadfile.doAction();
+                uploadfile.upFile(filepatch);
                 container.hideOptions()
 
                 // Remove selected item and notify listview model
-                masterPage.model.splice(index, 1)
-                masterPage.modelChanged()
+                //masterPage.model.splice(index, 1)
+                //masterPage.modelChanged()
             }
         }
 
