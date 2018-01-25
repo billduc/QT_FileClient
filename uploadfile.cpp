@@ -62,7 +62,7 @@ bool UploadFile::upFile(QString filename)
    std::cout << filename.toStdString() << std::endl;
 
    int fd;
-   fd =  initConnnect("172.16.80.25",443);
+   fd =  initConnnect("172.16.80.26",443);
    char buffer[12345];
 
    if (fd < 0){

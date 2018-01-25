@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include <QApplication>
 #include <VPApplication>
 #include <QNetworkRequest>
@@ -9,6 +10,7 @@
 #include <QObject>
 
 #include "uploadfile.h"
+#include "md5.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -19,6 +21,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     VPApplication vplay;
+
+    string md5code = md5("test");
+    std::cout << md5code << std::endl;
 
 //    uploadFile *upfile = new uploadFile();
 
