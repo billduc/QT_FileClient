@@ -1,6 +1,6 @@
 import VPlayApps 1.0
 import QtQuick 2.0
-
+import file 1.0
 
 App {
     // You get free licenseKeys from https://v-play.net/licenseKey
@@ -9,6 +9,10 @@ App {
     //  * Remove the V-Play Splash Screen or set a custom one (available with the Pro Licenses)
     //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
     //licenseKey: "<generate one from https://v-play.net/licenseKey>"
+
+    UploadFile {
+         id: uploadfile
+    }
 
     NavigationStack {
 

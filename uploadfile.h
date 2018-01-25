@@ -1,18 +1,33 @@
 #ifndef UPLOADFILE_H
 #define UPLOADFILE_H
 
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QString>
-#include <QFile>
-#include <iostream>
+#include <bits/stdc++.h>
+#include <QObject>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/fcntl.h>
+#include <sys/param.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
+#include <netdb.h>
+#include <cerrno>
 
-class uploadFile : public QObject
+class UploadFile : public QObject
 {
-
+    Q_OBJECT
 public:
-    uploadFile();
+    explicit UploadFile(QObject *parent = nullptr);
+
+signals:
+
+public slots:
+    int initConnnect(std::string host, int port);
+    bool upFile(std::string filename);
+
     void doAction();
 };
 

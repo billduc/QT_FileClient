@@ -1,6 +1,7 @@
 import VPlayApps 1.0
 import QtQuick 2.2
 import QtQuick.Dialogs 1.0
+import file 1.0
 
 ListPage {
     id: masterPage
@@ -8,7 +9,7 @@ ListPage {
     title: qsTr("File Client")
     property  var filepatch: "NULL"
 
-    uploadfile {
+    UploadFile {
         id: uploadfile
     }
 
@@ -48,6 +49,7 @@ ListPage {
             text: qsTr("upload")
 
             onClicked: {
+                uploadfile.doAction();
                 container.hideOptions()
 
                 // Remove selected item and notify listview model

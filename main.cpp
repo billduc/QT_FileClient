@@ -5,8 +5,13 @@
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QGuiApplication>
+#include <QObject>
 
 #include "uploadfile.h"
+
+#include <sys/socket.h>
+#include <sys/types.h>
 
 using namespace std;
 
@@ -15,18 +20,15 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     VPApplication vplay;
 
-    uploadFile *upfile = new uploadFile();
+//    uploadFile *upfile = new uploadFile();
 
-    //const char *uri = "fileclient";
-    //qRegisterMetaType<uploadFile>("uploadFile");
-    //qmlRegisterType<uploadFile>(uri, 1, 0, "uploadFile");
+    qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
 
     // Use platform-specific fonts instead of V-Play's default font
     vplay.setPreservePlatformFonts(true);
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("uploadfile", upfile);
-
+    //engine.rootContext()->setContextProperty("uploadfile", upfile);
 
     vplay.initialize(&engine);
 
