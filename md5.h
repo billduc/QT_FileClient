@@ -45,4 +45,5 @@ private:
 };
 
 std::string md5(const std::string str);
+
 #endif // MD5_H

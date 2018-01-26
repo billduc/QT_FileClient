@@ -12,9 +12,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 #include <netdb.h>
 #include <cerrno>
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <errno.h>
+#include <unistd.h>
+#include <malloc.h>
+
+#define FAIL    -1
+
+
+#include "md5.h"
 
 class UploadFile : public QObject
 {
@@ -26,7 +36,10 @@ signals:
 
 private:
     int initConnnect(std::string host, int port);
-
+    SSL_CTX *ctx;
+    SSL *ssl;
+    int bytes;
+    char buffer[12345];
 public slots:
     bool upFile(QString filename);
     void doAction();
