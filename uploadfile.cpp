@@ -17,6 +17,7 @@ int initConnnectC(std::string host, int port){
     int socketfd;
     struct hostent *server;
     struct sockaddr_in serv_addr;
+    char buffer[12345];
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -46,6 +47,22 @@ int initConnnectC(std::string host, int port){
 
 
     std::cout <<"@Server connected" << std::endl;
+
+    std::string md5code = md5("test");
+    send(socketfd, md5code.c_str(), md5code.length(),0);
+
+    bool okConn = false;
+
+    recv(socketfd, buffer, sizeof(buffer), 0);
+
+    if ( strcmp(buffer,"200 ok") ==0 ){
+        std::cout << "auth ok!! confirmed connection" << std::endl;
+        okConn = true;
+    }
+    else{
+        std::cout << "authentication failure!!!" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     return socketfd;
 
