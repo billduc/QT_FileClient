@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
     string md5code = md5("test");
     std::cout << md5code << std::endl;
 
+    //UploadFile *up = new UploadFile();
+    //up->upFile("FILE////home/hydra/info.txt");
+
 //    uploadFile *upfile = new uploadFile();
 
     qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
