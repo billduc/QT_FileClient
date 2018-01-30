@@ -142,6 +142,7 @@ int  UploadFile::initConnnect(std::string host, int port)
         return FAIL;
     else{
         SSL_set_fd(this->ssl, sd);
+        SSL_set_connect_state(this->ssl);
         //SSL_connect(this->ssl);
         //std::cout << "ssl connected" << std::endl;
         if ( SSL_connect(this->ssl) == -1 )   /* perform the connection */
