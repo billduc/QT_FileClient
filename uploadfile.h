@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <cerrno>
+#include <fstream>
+#include <sys/stat.h>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -36,6 +38,7 @@ signals:
 
 private:
     int initConnnect(std::string host, int port);
+    bool fsend(std::string filepath);
     SSL_CTX *ctx;
     SSL *ssl;
     int bytes;

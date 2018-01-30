@@ -211,16 +211,33 @@ std::string getFileName(std::string filepath){
     }
 }
 
+bool UploadFile::fsend(std::string filepath){
+    std::ifstream ifFile(filepath.c_str(), std::ios::in | std::ios::binary);
+    std::string filename = getFileName(filepath);
+    if (!ifFile.is_open()){
+        std::cerr <<"Cannot open file " << filename << std::endl;
+        return false;
+    } else{
+        while (ifFile.peek() != EOF){
+            bzero(this->buffer, sizeof(this->buffer));
+            ifFile.read(this->buffer, sizeof this->buffer);
+            SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
+        }
+
+        std::cout << "Send file done!!!!" << std::endl;
+        close(SSL_get_fd(this->ssl));
+        return true;
+    }
+}
+
 bool UploadFile::upFile(QString filename)
 {
    filename.remove(0,7);
-   std::cout << filename.toStdString() << std::endl;
+   std::cout << "file path: " << filename.toStdString() << std::endl;
 
    int fd;
    fd =  initConnnect("172.16.80.26",443);
    //fd =  initConnnect("localhost",443);
-   //char buffer[12345];
-   //bzero(buffer, sizeof(buffer));
 
    if (fd < 0){
         std::cerr <<"cannot establish connection to server" << std::endl;
@@ -238,8 +255,11 @@ bool UploadFile::upFile(QString filename)
         bzero(this->buffer, sizeof(this->buffer));
         SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
 
-
         std::cout <<"server answer: " << this->buffer << std::endl;
+
+        this->fsend(filename.toStdString());
+
+        /*
 
         FILE * fp = fopen(filename.toStdString().c_str(), "r");
 
@@ -249,10 +269,11 @@ bool UploadFile::upFile(QString filename)
             bzero( this->buffer, sizeof (this->buffer));
             int fs_block_size;
 
-            //fseek(fp, 0, SEEK_END);
-
+            fseek(fp, 0, SEEK_SET);
+            int count = 1;
             while ( (fs_block_size = fread(this->buffer, sizeof(char), sizeof(this->buffer), fp ) ) > 0 ){
-                std::cout << "send file " << fs_block_size << std::endl;
+                std::cout << "send file " << count << "  " << fs_block_size << std::endl;
+                ++count;
                 //if (send(fd, this->buffer, fs_block_size,0) < 0)
                 if (SSL_write(this->ssl, this->buffer, fs_block_size) < 0)
                 {
@@ -270,6 +291,7 @@ bool UploadFile::upFile(QString filename)
 
             close(SSL_get_fd(this->ssl));
         }
+        */
         return true;
    }
 }
