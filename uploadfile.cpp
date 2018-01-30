@@ -170,8 +170,7 @@ int  UploadFile::initConnnect(std::string host, int port)
             //send(socketfd, md5code.c_str(), md5code.length(),0);
 
             SSL_write(this->ssl, md5code.c_str(), md5code.length());
-            //char a[] = "098f6bcd4621d373cade4e832627b4f6";
-            //SSL_write(this->ssl, "098f6bcd4621d373cade4e832627b4f6", sizeof(a));
+
             bool okConn = false;
 
             bzero(this->buffer, sizeof this->buffer);
@@ -218,8 +217,8 @@ bool UploadFile::upFile(QString filename)
    std::cout << filename.toStdString() << std::endl;
 
    int fd;
-   //fd =  initConnnect("172.16.80.26",443);
-   fd =  initConnnect("localhost",443);
+   fd =  initConnnect("172.16.80.26",443);
+   //fd =  initConnnect("localhost",443);
    //char buffer[12345];
    //bzero(buffer, sizeof(buffer));
 
@@ -250,10 +249,10 @@ bool UploadFile::upFile(QString filename)
             bzero( this->buffer, sizeof (this->buffer));
             int fs_block_size;
 
+            //fseek(fp, 0, SEEK_END);
+
             while ( (fs_block_size = fread(this->buffer, sizeof(char), sizeof(this->buffer), fp ) ) > 0 ){
                 std::cout << "send file " << fs_block_size << std::endl;
-
-
                 //if (send(fd, this->buffer, fs_block_size,0) < 0)
                 if (SSL_write(this->ssl, this->buffer, fs_block_size) < 0)
                 {
