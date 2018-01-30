@@ -212,14 +212,60 @@ std::string getFileName(std::string filepath){
 }
 
 bool UploadFile::fsend(std::string filepath){
-    std::ifstream ifFile(filepath.c_str());//, std::ios::in | std::ios::binary);
-    std::string filename = getFileName(filepath);
-    if (!ifFile.is_open()){
-        std::cerr <<"Cannot open file " << filename << std::endl;
-        return false;
-    } else{
-        ifFile.seekg(0, std::ios::beg);
-        int count = 1;
+    std::ifstream ifFile(filepath.c_str(), std::ios::in | std::ios::binary);
+
+    ifFile.seekg(0, std::ios::end);
+    long long fileSize = ifFile.tellg();
+
+    std::cout << "fileSize : " << fileSize << std::endl;
+
+    size_t total_chunks = fileSize / sizeof(this->buffer);
+    size_t size_last_chunk = fileSize % sizeof(this->buffer);
+
+    unsigned int dataSend = 0;
+
+    int count = 1;
+
+    for(int i = 0; i < total_chunks; ++i){
+        ifFile.read(this->buffer, sizeof(this->buffer));
+        int si = SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
+        if (si < 0)
+            std::cerr << " ssl wirte data error !!!!" << std::endl;
+        else{
+            dataSend += si;
+            std::cout << " ssl send ok " << count  << ": " << si <<  " - " << sizeof(this->buffer) << std::endl;
+            ++count;
+        }
+    }
+
+    if (size_last_chunk > 0){
+        ifFile.read(this->buffer, size_last_chunk);
+        int si = SSL_write(this->ssl, this->buffer, size_last_chunk);
+        if (si < 0)
+            std::cerr <<" ssl wirte data error !!!!" << std::endl;
+        else{
+            dataSend += si;
+            std::cout << " ssl send ok " << count  << ": " << si <<  " - " << size_last_chunk << std::endl;
+            ++count;
+        }
+    }
+
+    std::cout << "data sended: " << dataSend  << " of  Datasize: " << fileSize << std::endl;
+    close(SSL_get_fd(this->ssl));
+    return true;
+}
+
+bool UploadFile::Csend(std::string filepath){
+
+    FILE * fp = fopen(filepath.c_str(), "r");
+
+    if (fp == NULL){
+        std::cerr << "Cannot open file" << std::endl;
+        return true;
+    } else {
+        bzero( this->buffer, sizeof (this->buffer));
+        int fs_block_size;
+
         struct stat statbuf;
 
         if (stat(filepath.c_str(), &statbuf) == -1){
@@ -229,32 +275,28 @@ bool UploadFile::fsend(std::string filepath){
         long long totalSize = statbuf.st_size;
         long long dataSend = 0;
 
-        while (!ifFile.eof() && dataSend < totalSize){
-            //bzero(this->buffer, sizeof(this->buffer));
-            //memset(this->buffer,0, sizeof this->buffer);
-            int sizechunk = 0;
-            ifFile.read(this->buffer, sizeof this->buffer);
-            SSL_write(this->ssl, this->buffer, sizechunk);
-            dataSend += sizechunk;
-            /*
-            if (dataSend + sizeof this->buffer <= totalSize){
-                ifFile.read(this->buffer, sizeof this->buffer);
-                //ifFile >> this->buffer;
-                SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
-                dataSend +=sizeof this->buffer;
-            } else{
-                ifFile.read(this->buffer, totalSize - dataSend);
-                //ifFile >> this->buffer;
-                SSL_write(this->ssl, this->buffer, totalSize - dataSend);
-                dataSend +=totalSize - dataSend;
-            }
-            */
-            //std::cout << "size of a chunk " << count  << " " << sizeof(this->buffer) << std::endl;
+        //fseek(fp, 0, SEEK_SET);
+        int count = 1;
+        while ( (fs_block_size = fread(this->buffer, sizeof(char), sizeof(this->buffer), fp ) ) > 0 ){
+            std::cout << "send file " << count << "  " << fs_block_size << std::endl;
             ++count;
+            //if (send(fd, this->buffer, fs_block_size,0) < 0)
+            dataSend += fs_block_size;
+
+            if (SSL_write(this->ssl, this->buffer, fs_block_size) < 0)
+            {
+                std::cerr << "ERROR: Fail to send file\n" << std::endl;
+                break;
+            }
+            bzero(this->buffer, sizeof(this->buffer));
         }
 
         std::cout << "Send file done!!!! totalSize " << totalSize << " sended " << dataSend << std::endl;
-        ifFile.close();
+
+        long FileSize = ftell(fp);
+
+        std::cout <<"file size: " <<  FileSize << std::endl;
+
         close(SSL_get_fd(this->ssl));
         return true;
     }
@@ -287,51 +329,7 @@ bool UploadFile::upFile(QString filename)
 
         std::cout <<"server answer: " << this->buffer << std::endl;
 
-        //this->fsend(filename.toStdString());
-
-
-
-        FILE * fp = fopen(filename.toStdString().c_str(), "r");
-
-        if (fp == NULL){
-            std::cerr << "Cannot open file" << std::endl;
-        } else {
-            bzero( this->buffer, sizeof (this->buffer));
-            int fs_block_size;
-
-            struct stat statbuf;
-
-            if (stat(filename.toStdString().c_str(), &statbuf) == -1){
-                std::cerr << "get stat file error!!!" << std::endl;
-            }
-
-            long long totalSize = statbuf.st_size;
-            long long dataSend = 0;
-
-            //fseek(fp, 0, SEEK_SET);
-            int count = 1;
-            while ( (fs_block_size = fread(this->buffer, sizeof(char), sizeof(this->buffer), fp ) ) > 0 ){
-                std::cout << "send file " << count << "  " << fs_block_size << std::endl;
-                ++count;
-                //if (send(fd, this->buffer, fs_block_size,0) < 0)
-                dataSend += fs_block_size;
-
-                if (SSL_write(this->ssl, this->buffer, fs_block_size) < 0)
-                {
-                    std::cerr << "ERROR: Fail to send file\n" << std::endl;
-                    break;
-                }
-                bzero(this->buffer, sizeof(this->buffer));
-            }
-
-            std::cout << "Send file done!!!! totalSize " << totalSize << " sended " << dataSend << std::endl;
-
-            long FileSize = ftell(fp);
-
-            std::cout <<"file size: " <<  FileSize << std::endl;
-
-            close(SSL_get_fd(this->ssl));
-        }
+        this->fsend(filename.toStdString());
 
         return true;
    }
