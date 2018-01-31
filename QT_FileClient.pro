@@ -49,4 +49,8 @@ macx {
 
 HEADERS += \
     uploadfile.h \
-    md5.h
+    md5.h \
+    filesys.h
+
+DISTFILES += \
+    qml/login.qml

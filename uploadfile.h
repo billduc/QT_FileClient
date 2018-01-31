@@ -40,6 +40,7 @@ private:
     int initConnnect(std::string host, int port);
     bool fsend(std::string filepath);
     bool Csend(std::string filepath);
+
     SSL_CTX *ctx;
     SSL *ssl;
     int bytes;

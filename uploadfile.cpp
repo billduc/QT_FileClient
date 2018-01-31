@@ -8,6 +8,7 @@
 #include <cerrno>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/md5.h>
 #include <errno.h>
 #include <unistd.h>
 #include <malloc.h>
@@ -62,7 +63,7 @@ int initConnnectC(std::string host, int port){
     }
 
 
-    std::cout <<"@Server connected" << std::endl;
+    std::cout <<"@Server connected TCP" << std::endl;
 
 //    std::string md5code = md5("test");
 //    send(socketfd, md5code.c_str(), md5code.length(),0);
@@ -144,22 +145,38 @@ int  UploadFile::initConnnect(std::string host, int port)
     else{
         SSL_set_fd(this->ssl, sd);
         SSL_set_connect_state(this->ssl);
-        //SSL_connect(this->ssl);
-        //std::cout << "ssl connected" << std::endl;
+
         if ( SSL_connect(this->ssl) == -1 )   /* perform the connection */
             {
                 printf("Error: ssl connection\n");
                 ERR_print_errors_fp(stderr);
-                switch (SSL_get_error(this->ssl,1) ) {
-                case SSL_ERROR_WANT_READ:
-                    std::cout << "SSL_ERROR_WANT_READ" << std::endl;
-                    break;
-                case SSL_ERROR_WANT_WRITE:
-                    std::cout << "SSL_ERROR_WANT_WRITE" << std::endl;
-                    break;
-                default:
-                    std::cout << "SSL_ERROR... " << SSL_get_error(this->ssl,1) <<  std::endl;
-                    break;
+                int ret = 1234;
+                SSL_get_error(this->ssl, ret);
+                switch ( ret) {
+                    case SSL_ERROR_WANT_READ:
+                        std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
+                        break;
+                    case SSL_ERROR_WANT_WRITE:
+                        std::cerr << "SSL_ERROR_WANT_WRITE" << std::endl;
+                        break;
+                    case SSL_ERROR_ZERO_RETURN:
+                        std::cerr << "SSL_ERROR_ZERO_RETURN" << std::endl;
+                        break;
+                    case SSL_ERROR_WANT_X509_LOOKUP:
+                        std::cerr << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
+                        break;
+                    case SSL_ERROR_SYSCALL:
+                        std::cerr << "SSL_ERROR_SYSCALL" << std::endl;
+                        break;
+                    case SSL_ERROR_NONE:
+                        std::cerr << "SSL_ERROR_NONE" << std::endl;
+                        break;
+                    case SSL_ERROR_WANT_CONNECT:
+                        std::cerr << "SSL_ERROR_WANT_CONNECT" << std::endl;
+                        break;
+                    default:
+                        std::cerr << "SSL_ERROR... " << ret <<  std::endl;
+                        break;
                 }
                 return FAIL;
             }
