@@ -267,7 +267,7 @@ bool UploadFile::fsend(std::string filepath){
             ++count;
         }
     }
-
+    
     if (size_last_chunk > 0){
         ifFile.read(this->buffer, size_last_chunk);
         int si = SSL_write(this->ssl, this->buffer, size_last_chunk);

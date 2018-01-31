@@ -43,7 +43,8 @@ private:
     SSL_CTX *ctx;
     SSL *ssl;
     int bytes;
-    char buffer[40960];
+    char buffer[4096];
+
 public slots:
     bool upFile(QString filename);
     void doAction();
