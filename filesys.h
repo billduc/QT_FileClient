@@ -39,4 +39,9 @@
 #define CMF_SHARE_FINISH        15
 
 
+#define rep(i,n) 				for(int i = 0; i < (int) n; ++i)
+#define For(i,a,b) 				for(int i =(int) a; i <=(int) b; ++i)
+#define PACKET 					std::vector<unsigned char>
+#define PS 						push_back
+
 #endif // FILESYS_H

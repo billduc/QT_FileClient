@@ -9,7 +9,11 @@ extern "C"
 
 Connection::Connection()
 {
+    this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+}
 
+Connection::~Connection(){
+    SSL_CTX_free(this->ctx);
 }
 
 bool Connection::TCPconn(std::string ipAddr, int port){
@@ -24,7 +28,7 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     this->setNonBlocking(this->socketfd);
 
     struct hostent *server;
-    struct addrinfo *iServer;
+    //struct addrinfo *iServer;
     struct sockaddr_in serv_addr;
 
     server = gethostbyname(ipAddr.c_str());
@@ -51,6 +55,47 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     return true;
 }
 
+bool Connection::TLSconn(std::string fileCerts){
+    this->ssl = SSL_new(this->ctx);
+
+    SSL_set_fd(this->ssl, this->socketfd);
+
+    SSL_set_connect_state(this->ssl);
+
+    if (SSL_connect(this->ssl) == -1 ){
+        std::cerr <<"ERROR: ssl connection fail" << std::endl;
+        int ret = 888;
+        SSL_get_error(this->ssl, ret);
+        switch (ret) {
+            case SSL_ERROR_WANT_READ:
+                std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                std::cerr << "SSL_ERROR_WANT_WRITE" << std::endl;
+                break;
+            case SSL_ERROR_WANT_CONNECT:
+                std::cerr << "SSL_ERROR_WANT_CONNECT:" << std::endl;
+                break;
+            case SSL_ERROR_SYSCALL:
+                std::cerr << "SSL_ERROR_SYSCALL" << std::endl;
+                break;
+            case SSL_ERROR_ZERO_RETURN:
+                std::cerr << "SSL_ERROR_ZERO_RETURN" << std::endl;
+                break;
+            case SSL_ERROR_WANT_X509_LOOKUP:
+                std::cerr << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
+                break;
+            default:
+                break;
+        }
+        return false;
+    } else {
+        std::cout << "Log: Establish TLS connection with server " << std::endl;
+        std::cout << "Log: Encryption: " << SSL_get_cipher(this->ssl) << std::endl;
+        return true;
+    }
+}
+
 SSL_CTX* Connection::InitCTX(std::string fileCert) {
     SSL_CTX *ctx;
 
@@ -67,7 +112,7 @@ SSL_CTX* Connection::InitCTX(std::string fileCert) {
         abort();
     }
 
-    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem"
+    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pemc"
     if ( SSL_CTX_use_certificate_file(ctx, fileCert.c_str(),SSL_FILETYPE_PEM) <= 0 )
     {
         ERR_print_errors_fp(stderr);
@@ -91,3 +136,63 @@ void Connection::setNonBlocking(int &sock) {
         return;
     }
 }
+
+bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
+    if ( !this->TCPconn(host, port) ){
+        std::cerr << "ERROR: Fail to connecting to server" << std::endl;
+        return false;
+    }
+
+    std::cout << "TCP connection established" << std::endl;
+
+    if ( !this->TLSconn(fileCert) ){
+        std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
+        return false;
+    }
+
+
+}
+
+bool Connection::sendLoginRequest(std::string username, std::string password){
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

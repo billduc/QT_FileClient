@@ -27,7 +27,8 @@ LIBS += -L/usr/lib -lssl -lcrypto
 SOURCES += main.cpp \
     uploadfile.cpp \
     md5.cpp \
-    connection.cpp
+    connection.cpp \
+    packet.cpp
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -52,7 +53,8 @@ HEADERS += \
     uploadfile.h \
     md5.h \
     filesys.h \
-    connection.h
+    connection.h \
+    packet.h
 
 DISTFILES += \
     qml/login.qml
