@@ -1,25 +1,13 @@
 #include "uploadfile.h"
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <cerrno>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/md5.h>
-#include <errno.h>
-#include <unistd.h>
-#include <malloc.h>
-
-
 extern "C"
 {
     int initConnnectC(std::string host, int port);
     SSL_CTX* InitCTX(void);
     void ShowCerts(SSL* ssl);
 }
+
 UploadFile::UploadFile(QObject *parent) : QObject(parent)
 {
 

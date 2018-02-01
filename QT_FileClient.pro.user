@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.4.1, 2018-01-30T19:35:42. -->
+<!-- Written by QtCreator 4.5.0, 2018-02-01T14:33:12. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -59,8 +59,8 @@
  <data>
   <variable>ProjectExplorer.Project.Target.0</variable>
   <valuemap type="QVariantMap">
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">V-Play Desktop (Qt 5.9.3 GCC)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">V-Play Desktop (Qt 5.9.3 GCC)</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">V-Play Desktop (Qt 5.10.0 GCC)</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">V-Play Desktop (Qt 5.10.0 GCC)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">vplayengine.2.qt.gcc_64_kit</value>
    <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
