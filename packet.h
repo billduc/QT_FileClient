@@ -7,16 +7,19 @@ class Packet
 {
 public:
     Packet();
-    void build(int cmd);
+
+    ~Packet();
+
+    bool appendData(int cmd);
+    bool appendData(std::string s);
     std::string readHeader();
     std::string readData();
-
+    PACKET getData();
 private:
-    std::vector<unsigned char> data;
+    PACKET data;
 
-
-    std::vector<unsigned char> buildIntField(int cmd);
-    std::vector<unsigned char> buildStringField(std::string sdata);
+    PACKET buildIntField(int cmd);
+    PACKET buildStringField(std::string sdata);
 };
 
 #endif // PACKET_H

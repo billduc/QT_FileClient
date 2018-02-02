@@ -2,6 +2,7 @@
 #define CONNECTION_H
 
 #include "filesys.h"
+#include "packet.h"
 
 class Connection
 {

@@ -150,11 +150,24 @@ bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
         return false;
     }
 
-
+    return true;
 }
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
+    username = "hello";
+    password = "whoami";
 
+    Packet *pk = new Packet();
+
+    pk->appendData(CMD_AUTHEN_LOGIN);
+    pk->appendData(username);
+    pk->appendData(password);
+
+    rep(i,pk->getData().size()){
+        std::cout << pk->getData().at(i);
+    }
+    std::cout << std::endl;
+    return true;
 }
 
 

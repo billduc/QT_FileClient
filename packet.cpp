@@ -5,9 +5,12 @@ Packet::Packet()
     this->data.clear();
 }
 
+Packet::~Packet(){
+    this->data.clear();
+}
 
-std::vector<unsigned char> Packet::buildIntField(int cmd){
-    std::vector<unsigned char> vc (4);
+PACKET Packet::buildIntField(int cmd){
+    PACKET vc (4);
     /*
     bytes[0] = (n >> 24) & 0xFF;
     bytes[1] = (n >> 16) & 0xFF;
@@ -21,13 +24,13 @@ std::vector<unsigned char> Packet::buildIntField(int cmd){
     return vc;
 }
 
-std::vector<unsigned char> Packet::buildStringField(std::string sField){
+PACKET Packet::buildStringField(std::string sField){
     int leng = sField.length();
 
-    std::vector<unsigned char> sData;
+    PACKET sData;
     sData.clear();
 
-    std::vector<unsigned char> vtlength;
+    PACKET vtlength;
     vtlength = this->buildIntField(leng);
 
     sData.insert(sData.end(), vtlength.begin(), vtlength.end());
@@ -40,7 +43,24 @@ PACKET Packet::getData(){
     return this->data;
 }
 
+bool Packet::appendData(int cmd){
+    PACKET pk;
+    pk.clear();
+    pk = buildIntField(cmd);
 
+    this->data.insert(this->data.end(), pk.begin(), pk.end());
+
+    return true;
+}
+
+bool Packet::appendData(std::string s){
+    PACKET pk;
+    pk.clear();
+    pk = buildStringField(s);
+
+    this->data.insert(this->data.begin(), pk.begin(), pk.end());
+    return true;
+}
 
 
 
