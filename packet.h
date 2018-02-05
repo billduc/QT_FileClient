@@ -7,14 +7,20 @@ class Packet
 {
 public:
     Packet();
+    Packet(const PACKET & pk);
+    Packet(const std::string & s);
 
     ~Packet();
 
     bool appendData(int cmd);
     bool appendData(std::string s);
-    std::string readHeader();
-    std::string readData();
+    bool IsAvailableData();
     PACKET getData();
+
+
+    int getCMDHeader();
+    std::string getContent();
+
 private:
     PACKET data;
 
