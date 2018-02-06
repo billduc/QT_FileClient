@@ -172,9 +172,19 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
 
     char arr[123];
     memset(arr, 0, 123);
-    rep(i,pk->getData().size()){
-        arr[i] = pk->getData().at(i);
+
+    //rep(i,pk->getData().size()){
+    //    arr[i] = pk->getData().at(i);
+    //}
+
+    std::copy(pk->getData().begin(), pk->getData().end(), arr);
+
+    std::cout << strlen(arr) <<" " << pk->getData().size() << std::endl;
+
+    rep(i, strlen(arr)){
+        std::cout << arr[i];
     }
+    std::cout << std::endl;
 
     SSL_write(this->ssl,  arr, strlen(arr));
     std::cout << "send CMD request login finished " << arr << std::endl;
