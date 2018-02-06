@@ -19,13 +19,13 @@ Connection::~Connection(){
 bool Connection::TCPconn(std::string ipAddr, int port){
     this->socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (this->socketfd){
+    if (this->socketfd < 0){
         std::cerr <<"ERROR create socket!!!" << std::endl;
         return false;
     }
 
     //set non-blocking model for socket
-    this->setNonBlocking(this->socketfd);
+    //this->setNonBlocking(this->socketfd);
 
     struct hostent *server;
     //struct addrinfo *iServer;
@@ -47,9 +47,9 @@ bool Connection::TCPconn(std::string ipAddr, int port){
 
     serv_addr.sin_port = htons(port);
 
-    if (connect(this->socketfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) < 0 ){
-        std::cerr << "ERROR cannot connect to server" << std::endl;
-        return false;
+    if ( connect(this->socketfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
+        std::cerr << "ERROR connectiong to server!!!" << std::endl;
+        return -1;
     }
 
     return true;
@@ -149,13 +149,13 @@ bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
         std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
         return false;
     }
-
+    std::cout <<"TLS connection established" << std::endl;
     return true;
 }
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
-    username = "hello";
-    password = "whoami";
+    username = "user1";
+    password = "user1";
 
     Packet *pk = new Packet();
 
@@ -163,10 +163,21 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     pk->appendData(username);
     pk->appendData(password);
 
+    /*
     rep(i,pk->getData().size()){
         std::cout << pk->getData().at(i);
     }
-    std::cout << std::endl;
+    */
+    std::cout << "send CMD request login" << std::endl;
+
+    char arr[123];
+    memset(arr, 0, 123);
+    rep(i,pk->getData().size()){
+        arr[i] = pk->getData().at(i);
+    }
+
+    SSL_write(this->ssl,  arr, strlen(arr));
+    std::cout << "send CMD request login finished " << arr << std::endl;
     return true;
 }
 

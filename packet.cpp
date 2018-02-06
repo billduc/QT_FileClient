@@ -106,4 +106,16 @@ std::string Packet::getContent(){
     return res;
 }
 
-
+char * Packet::getDataToArray(){
+    char arr [this->data.size()+1];
+    memset(arr, 0, sizeof(arr));
+    rep(i,this->data.size())
+            arr[i] = this->data.at(i);
+    rep(i, strlen(arr)){
+        std::cout << arr[i];
+    }
+    std::cout << std::endl;
+    //std::string s = std::string(std::begin(this->data), std::end(this->data));
+    std::cout << "test: " << std::endl;
+    return arr;
+}

@@ -16,8 +16,7 @@ public:
     bool appendData(std::string s);
     bool IsAvailableData();
     PACKET getData();
-
-
+    char * getDataToArray();
     int getCMDHeader();
     std::string getContent();
 
