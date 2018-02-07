@@ -55,7 +55,7 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     return true;
 }
 
-bool Connection::TLSconn(std::string fileCerts){
+bool Connection::TLSconn(){
     this->ssl = SSL_new(this->ctx);
 
     SSL_set_fd(this->ssl, this->socketfd);
@@ -137,7 +137,7 @@ void Connection::setNonBlocking(int &sock) {
     }
 }
 
-bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
+bool Connection::ConnToServer(std::string host, int port){
     if ( !this->TCPconn(host, port) ){
         std::cerr << "ERROR: Fail to connecting to server" << std::endl;
         return false;
@@ -145,7 +145,7 @@ bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
 
     std::cout << "TCP connection established" << std::endl;
 
-    if ( !this->TLSconn(fileCert) ){
+    if ( !this->TLSconn() ){
         std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
         return false;
     }
@@ -154,8 +154,8 @@ bool Connection::ConnToServer(std::string host, int port, std::string fileCert){
 }
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
-    username = "user1";
-    password = "user1";
+    username = "user2";
+    password = "user2";
 
     Packet *pk = new Packet();
 
@@ -163,31 +163,29 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     pk->appendData(username);
     pk->appendData(password);
 
-    /*
-    rep(i,pk->getData().size()){
-        std::cout << pk->getData().at(i);
-    }
-    */
     std::cout << "send CMD request login" << std::endl;
 
-    char arr[123];
-    memset(arr, 0, 123);
+    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+    std::cout << "send CMD request login finished " << std::endl;
 
-    //rep(i,pk->getData().size()){
-    //    arr[i] = pk->getData().at(i);
-    //}
 
-    std::copy(pk->getData().begin(), pk->getData().end(), arr);
+    sleep(2);
 
-    std::cout << strlen(arr) <<" " << pk->getData().size() << std::endl;
+    int bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
 
-    rep(i, strlen(arr)){
-        std::cout << arr[i];
+    Packet *pkr = new Packet(std::string(buffer,bytes));
+    int cmd = pkr->getCMDHeader();
+    std::cout << "cmd respond: " << cmd << std::endl;
+    if (cmd == CMD_AUTHEN_SUCCESS){
+        std::cout << "login success" << std::endl;
+    } else{
+        std::cout << "login fail" << std::endl;
     }
-    std::cout << std::endl;
 
-    SSL_write(this->ssl,  arr, strlen(arr));
-    std::cout << "send CMD request login finished " << arr << std::endl;
+
+    delete pk;
+    delete pkr;
+
     return true;
 }
 

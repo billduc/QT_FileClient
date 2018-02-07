@@ -27,7 +27,8 @@ int main(int argc, char *argv[])
     std::cout << md5code << std::endl;
 
     Connection *con = new Connection();
-    con->ConnToServer("172.16.80.26",443,"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    //con->ConnToServer("172.16.80.26",443);
+    con->ConnToServer("localhost",443);
     //sleep(3);
     con->sendLoginRequest("fd","Asdf");
     //UploadFile *up = new UploadFile();

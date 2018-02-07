@@ -11,8 +11,8 @@ public:
     ~Connection();
 
     bool TCPconn(std::string host, int port);
-    bool TLSconn(std::string fileCert);
-    bool ConnToServer(std::string host, int port, std::string fileCert);
+    bool TLSconn();
+    bool ConnToServer(std::string host, int port);
     bool sendLoginRequest(std::string username, std::string password);
 
 private:
