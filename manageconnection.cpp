@@ -13,6 +13,10 @@ ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 
 ManageConnection::~ManageConnection(){
     SSL_CTX_free(this->ctx);
+    delete this->mainConnection;
+    rep(i,this->listConnnection.size()){
+        delete this->listConnnection.at(i);
+    }
 }
 
 
@@ -32,7 +36,7 @@ SSL_CTX* ManageConnection::InitCTX(std::string fileCert) {
         abort();
     }
 
-    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pemc"
+    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem"
     if ( SSL_CTX_use_certificate_file(ctx, fileCert.c_str(),SSL_FILETYPE_PEM) <= 0 )
     {
         ERR_print_errors_fp(stderr);
@@ -56,4 +60,15 @@ void ManageConnection::setNonBlocking(int &sock) {
         return;
     }
 }
+
+bool ManageConnection::connectToServer(QString host, int port){
+    this->mainConnection = new Connection();
+
+    return this->mainConnection->ConnToServer(host.toStdString(), port);
+}
+
+
+
+
+
 

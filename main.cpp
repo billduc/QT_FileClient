@@ -27,11 +27,11 @@ int main(int argc, char *argv[])
     string md5code = md5("test");
     std::cout << md5code << std::endl;
 
-    Connection *con = new Connection();
+    //Connection *con = new Connection();
     //con->ConnToServer("172.16.80.26",443);
-    con->ConnToServer("localhost",443);
+    //con->ConnToServer("localhost",443);
     //sleep(3);
-    con->sendLoginRequest("fd","Asdf");
+    //con->sendLoginRequest("fd","Asdf");
     //UploadFile *up = new UploadFile();
     //up->upFile("FILE////home/hydra/info.txt");
 

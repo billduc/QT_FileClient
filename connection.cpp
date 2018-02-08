@@ -9,11 +9,11 @@ extern "C"
 
 Connection::Connection()
 {
-    this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    //this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
 }
 
 Connection::~Connection(){
-    SSL_CTX_free(this->ctx);
+    //SSL_CTX_free(this->ctx);
 }
 
 bool Connection::TCPconn(std::string ipAddr, int port){
@@ -154,8 +154,8 @@ bool Connection::ConnToServer(std::string host, int port){
 }
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
-    username = "user1";
-    password = "user2";
+    //username = "user1";
+    //password = "user2";
 
     Packet *pk = new Packet();
 

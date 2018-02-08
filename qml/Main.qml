@@ -15,11 +15,23 @@ App {
          id: uploadfile
     }
 
+    ManageConnection{
+        id: manageConnecion;
+    }
+
 //    NavigationStack {
 
 //        MasterPage {}
 
 //    }
+
+
+    Component.onCompleted: {
+        if (manageConnecion.connectToServer("localhost","443") )
+            console.log("connection success");
+        else
+            console.log("conneciton fail");
+    }
 
     Rectangle{
             id:container
