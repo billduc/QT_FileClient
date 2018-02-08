@@ -154,7 +154,7 @@ bool Connection::ConnToServer(std::string host, int port){
 }
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
-    username = "user2";
+    username = "user1";
     password = "user2";
 
     Packet *pk = new Packet();
@@ -178,6 +178,8 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     std::cout << "cmd respond: " << cmd << std::endl;
     if (cmd == CMD_AUTHEN_SUCCESS){
         std::cout << "login success" << std::endl;
+        std::string session = pkr->getContent();
+        std::cout << "session: " << session << std::endl;
     } else{
         std::cout << "login fail" << std::endl;
     }

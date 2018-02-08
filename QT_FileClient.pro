@@ -28,7 +28,9 @@ SOURCES += main.cpp \
     uploadfile.cpp \
     md5.cpp \
     connection.cpp \
-    packet.cpp
+    packet.cpp \
+    filehandle.cpp \
+    manageconnection.cpp
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -54,7 +56,9 @@ HEADERS += \
     md5.h \
     filesys.h \
     connection.h \
-    packet.h
+    packet.h \
+    filehandle.h \
+    manageconnection.h
 
 DISTFILES += \
     qml/login.qml

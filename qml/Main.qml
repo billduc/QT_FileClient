@@ -1,6 +1,7 @@
 import VPlayApps 1.0
 import QtQuick 2.0
 import file 1.0
+import managerConnecion 1.0
 
 App {
     // You get free licenseKeys from https://v-play.net/licenseKey
@@ -14,9 +15,41 @@ App {
          id: uploadfile
     }
 
-    NavigationStack {
+//    NavigationStack {
 
-        MasterPage {}
+//        MasterPage {}
 
-    }
+//    }
+
+    Rectangle{
+            id:container
+            width: parent.width
+            height: parent.height
+
+            Loader{
+                id:mainLoader
+                anchors.fill: parent
+            }
+            states: [
+                State{
+                    name: "Login"
+                    PropertyChanges {
+                        target: mainLoader
+                        source: Qt.resolvedUrl("login.qml")
+                    }
+                },
+                State{
+                    name: "Master"
+                    PropertyChanges {
+                        target: mainLoader
+                        source: Qt.resolvedUrl("MasterPage.qml")
+                    }
+                }
+            ]
+            Component.onCompleted:
+            {
+                container.state = "Login"
+
+            }
+        }
 }

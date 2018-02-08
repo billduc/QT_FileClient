@@ -12,6 +12,7 @@
 #include "uploadfile.h"
 #include "md5.h"
 #include "connection.h"
+#include "manageconnection.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -37,6 +38,7 @@ int main(int argc, char *argv[])
 //    uploadFile *upfile = new uploadFile();
 
     qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
+    qmlRegisterType<ManageConnection>("managerConnecion",1,0,"ManageConnection");
 
     // Use platform-specific fonts instead of V-Play's default font
     vplay.setPreservePlatformFonts(true);

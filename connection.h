@@ -20,7 +20,7 @@ private:
     SSL_CTX *ctx;
     SSL *ssl;
     char buffer[5000];
-
+    bool is_mainConnecion;
     void setNonBlocking(int &sock);
     SSL_CTX* InitCTX(std::string fileCert);
     void ShowCerts(SSL *ssl);
