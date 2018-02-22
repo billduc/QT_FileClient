@@ -28,6 +28,7 @@ signals:
 
 public slots:
     bool connectToServer(QString host, int port);
+    bool authenConnection(QString username, QString password);
 };
 
 #endif // MANAGECONNECTION_H

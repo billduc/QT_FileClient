@@ -7,7 +7,7 @@
 class Connection
 {
 public:
-    Connection();
+    Connection(SSL_CTX * ctxp);
     ~Connection();
 
     bool TCPconn(std::string host, int port);
@@ -19,7 +19,7 @@ private:
     int socketfd ;
     SSL_CTX *ctx;
     SSL *ssl;
-    char buffer[5000];
+    char buffer[MAXLINE];
     bool is_mainConnecion;
     void setNonBlocking(int &sock);
     SSL_CTX* InitCTX(std::string fileCert);

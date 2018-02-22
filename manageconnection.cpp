@@ -62,11 +62,14 @@ void ManageConnection::setNonBlocking(int &sock) {
 }
 
 bool ManageConnection::connectToServer(QString host, int port){
-    this->mainConnection = new Connection();
+    this->mainConnection = new Connection(this->ctx);
 
     return this->mainConnection->ConnToServer(host.toStdString(), port);
 }
 
+bool ManageConnection::authenConnection(QString username, QString password){
+    return this->mainConnection->sendLoginRequest(username.toStdString(), password.toStdString());
+}
 
 
 

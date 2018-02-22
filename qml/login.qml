@@ -13,7 +13,9 @@ Page {
     backgroundColor: "white"
     //     login form background
 
-
+    ManageConnection{
+        id: managerConnection;
+    }
 
     Rectangle {
         id: loginForm
@@ -133,8 +135,10 @@ Page {
 
     function loginManual(){
 
-
-        container.state = qsTr("Master")
+        if (managerConnection.authenConnection(txtUsername,txtPassword) == true )
+            container.state = qsTr("Master")
+        else
+            console.log("login fail");
         //TODO
     }
 

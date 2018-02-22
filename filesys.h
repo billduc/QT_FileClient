@@ -19,8 +19,15 @@
 #include <netdb.h>
 #include <fcntl.h>
 
+#define TRUE                    1
+#define FALSE                   0
+
+#define USE_SSL                 1
+#define NO_SSL                  2
+
 #define CMD_AUTHEN_LOGIN        1
 #define CMD_AUTHEN_SUCCESS      2
+#define CMD_AUTHEN_FAIL         121
 
 #define CMD_ADD_CONTACT         3
 #define CMD_ADD_SUCCESS         4
@@ -38,10 +45,17 @@
 #define CMD_SHARE_CONFIRM       14
 #define CMF_SHARE_FINISH        15
 
+#define MAXCONN                 1000
+#define	MAXLINE                 4096	/* max text line length */
+#define	BUFFSIZE                8192	/* buffer size for reads and writes */
 
-#define rep(i,n) 				for(int i = 0; i < (int) n; ++i)
-#define For(i,a,b) 				for(int i =(int) a; i <=(int) b; ++i)
-#define PACKET 					std::vector<char>
-#define PS 						push_back
+#define PACKET                  std::vector<char>
+
+#define rep(i,n)                for(int i = 0; i < (int)n; ++i)
+#define Ford(i,a,b)             for(int i = (int)a; i >= (int)b; --i)
+#define For(i,a,b)              for(int i = (int)a; i <= (int)b; ++i)
+#define pb 			push_back
+#define X 			first
+#define Y			second
 
 #endif // FILESYS_H
