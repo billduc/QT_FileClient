@@ -135,7 +135,7 @@ Page {
 
     function loginManual(){
 
-        if (managerConnection.authenConnection(txtUsername,txtPassword) == true )
+        if (managerConnection.authenConnection(txtUsername.text,txtPassword.text) == true )
             container.state = qsTr("Master")
         else
             console.log("login fail");

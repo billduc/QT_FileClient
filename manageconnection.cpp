@@ -17,6 +17,7 @@ ManageConnection::~ManageConnection(){
     rep(i,this->listConnnection.size()){
         delete this->listConnnection.at(i);
     }
+    listConnnection.clear();
 }
 
 

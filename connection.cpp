@@ -130,7 +130,7 @@ bool Connection::ConnToServer(std::string host, int port){
 
 bool Connection::sendLoginRequest(std::string username, std::string password){
     //username = "user1";
-    //password = "user2";
+    //password = "user1";
 
     Packet *pk = new Packet();
 
@@ -138,9 +138,12 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     pk->appendData(username);
     pk->appendData(password);
 
+    std::cout << "username: " << username << " passwork: " << password << std::endl;
+
     std::cout << "send CMD request login "  << pk->getData().size() << std::endl;
 
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+
     std::cout << "send CMD request login finished " << std::endl;
 
 

@@ -19,7 +19,7 @@ private:
     int socketfd ;
     SSL_CTX *ctx;
     SSL *ssl;
-    char buffer[MAXLINE];
+    char buffer[BUFFSIZE];
     bool is_mainConnecion;
     void setNonBlocking(int &sock);
     SSL_CTX* InitCTX(std::string fileCert);
