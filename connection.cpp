@@ -2,23 +2,52 @@
 
 extern "C"
 {
+    SSL_CTX* InitCTX(std::string fileCert);
     void setNonBlocking(int &sock);
 }
 
 
 Connection::Connection(SSL_CTX * ctxp)
 {
-    this->ctx = ctxp;
-    //this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    //this->ctx = ctxp;
+    this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
 }
 
 Connection::~Connection(){
     //SSL_CTX_free(this->ctx);
+    close(this->socketfd);
 }
+
+SSL_CTX* Connection::InitCTX(std::string fileCert) {
+    SSL_CTX *ctx;
+
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+    SSL_load_error_strings();   /* Bring in and register error messages */
+
+    ctx = SSL_CTX_new( TLSv1_2_client_method() );   /* Create new context */
+
+    if ( ctx == NULL )
+    {
+        ERR_print_errors_fp(stderr);
+        printf("Eroor: %s\n",stderr);
+        abort();
+    }
+
+    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem"
+    if ( SSL_CTX_use_certificate_file(ctx, fileCert.c_str(),SSL_FILETYPE_PEM) <= 0 )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+
+    return ctx;
+}
+
 
 bool Connection::TCPconn(std::string ipAddr, int port){
     this->socketfd = socket(AF_INET, SOCK_STREAM, 0);
-
+    std::cout << "fd " << this->socketfd << std::endl;
     if (this->socketfd < 0){
         std::cerr <<"ERROR create socket!!!" << std::endl;
         return false;
@@ -124,7 +153,7 @@ bool Connection::ConnToServer(std::string host, int port){
         std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
         return false;
     }
-    std::cout <<"TLS connection established" << std::endl;
+    std::cout <<"TLS connection established " << SSL_get_fd(this->ssl)  <<  std::endl;
     return true;
 }
 
@@ -139,29 +168,32 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     pk->appendData(password);
 
     std::cout << "username: " << username << " passwork: " << password << std::endl;
+    //PACKET d = pk->getData();
+    //std::string da(d.begin(), d.end());
+    std::cout << SSL_get_fd(this->ssl) << " send CMD request login "  << pk->getData().size() << " - " << pk->getData_stdString() << std::endl;
 
-    std::cout << "send CMD request login "  << pk->getData().size() << std::endl;
-
-    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
 
     std::cout << "send CMD request login finished " << std::endl;
 
+    sleep(2);
 
-    //sleep(2);
+    bzero(this->buffer, sizeof(this->buffer));
 
     int bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+
+    //std::cout << "read CMD reponse login finished " << bytes << std::endl;
 
     Packet *pkr = new Packet(std::string(buffer,bytes));
     int cmd = pkr->getCMDHeader();
     std::cout << "cmd respond: " << cmd << std::endl;
-    if (cmd == CMD_AUTHEN_SUCCESS){
+    if (cmd == CMD_AUTHEN_SUCCESS) {
         std::cout << "login success" << std::endl;
         std::string session = pkr->getContent();
         std::cout << "session: " << session << std::endl;
-    } else{
+    } else {
         std::cout << "login fail" << std::endl;
     }
-
 
     delete pk;
     delete pkr;

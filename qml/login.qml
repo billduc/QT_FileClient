@@ -13,10 +13,6 @@ Page {
     backgroundColor: "white"
     //     login form background
 
-    ManageConnection{
-        id: managerConnection;
-    }
-
     Rectangle {
         id: loginForm
         anchors.centerIn: parent
@@ -135,7 +131,7 @@ Page {
 
     function loginManual(){
 
-        if (managerConnection.authenConnection(txtUsername.text,txtPassword.text) == true )
+        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) )
             container.state = qsTr("Master")
         else
             console.log("login fail");

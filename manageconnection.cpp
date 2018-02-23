@@ -12,12 +12,12 @@ ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 }
 
 ManageConnection::~ManageConnection(){
-    SSL_CTX_free(this->ctx);
     delete this->mainConnection;
     rep(i,this->listConnnection.size()){
         delete this->listConnnection.at(i);
     }
     listConnnection.clear();
+    SSL_CTX_free(this->ctx);
 }
 
 

@@ -20,6 +20,7 @@ public:
     int getCMDHeader();
     std::string getContent();
 
+    std::string getData_stdString();
 private:
     PACKET data;
 

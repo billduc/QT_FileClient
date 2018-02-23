@@ -119,3 +119,8 @@ char * Packet::getDataToArray(){
     std::cout << "test: " << std::endl;
     return arr;
 }
+
+std::string Packet::getData_stdString(){
+    std::string da(this->data.begin(), this->data.end());
+    return da;
+}
