@@ -49,6 +49,9 @@
 #define	MAXLINE                 4096	/* max text line length */
 #define	BUFFSIZE                8192	/* buffer size for reads and writes */
 
+#define CMD_IS_MAIN_CONNECTION  8888
+#define CMD_IS_FILE_CONNECTION  9999
+
 #define PACKET                  std::vector<char>
 
 #define rep(i,n)                for(int i = 0; i < (int)n; ++i)

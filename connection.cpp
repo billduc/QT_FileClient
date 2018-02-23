@@ -161,6 +161,13 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     //username = "user1";
     //password = "user1";
 
+    //send cmd to specify this connection is mainconnection
+    Packet *pkClassify = new Packet();
+    pkClassify->appendData(CMD_IS_MAIN_CONNECTION);
+
+    SSL_write(this->ssl,  &pkClassify->getData()[0], pkClassify->getData().size() );
+
+    //send login request
     Packet *pk = new Packet();
 
     pk->appendData(CMD_AUTHEN_LOGIN);
@@ -195,6 +202,7 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
         std::cout << "login fail" << std::endl;
     }
 
+    delete pkClassify;
     delete pk;
     delete pkr;
 
