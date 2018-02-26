@@ -9,8 +9,10 @@ extern "C"
 
 Connection::Connection(SSL_CTX * ctxp)
 {
-    //this->ctx = ctxp;
-    this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->ctx = ctxp;
+    //this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->timeout.tv_sec = 5;
+    this->timeout.tv_usec = 0;
 }
 
 Connection::~Connection(){
@@ -47,9 +49,9 @@ SSL_CTX* Connection::InitCTX(std::string fileCert) {
 
 bool Connection::TCPconn(std::string ipAddr, int port){
     this->socketfd = socket(AF_INET, SOCK_STREAM, 0);
-    std::cout << "fd " << this->socketfd << std::endl;
+    std::cout << "@connection log: fd " << this->socketfd << std::endl;
     if (this->socketfd < 0){
-        std::cerr <<"ERROR create socket!!!" << std::endl;
+        std::cerr <<"@connection log: ERROR create socket!!!" << std::endl;
         return false;
     }
 
@@ -64,7 +66,7 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     //iServer = getaddrinfo()
 
     if ( server == NULL ){
-        std::cerr << "ERROR, no such host" << std::endl;
+        std::cerr << "@connection log: ERROR, no such host" << std::endl;
         return false;
     }
 
@@ -77,7 +79,7 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     serv_addr.sin_port = htons(port);
 
     if ( connect(this->socketfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
-        std::cerr << "ERROR connectiong to server!!!" << std::endl;
+        std::cerr << "@connection log: ERROR connectiong to server!!!" << std::endl;
         return -1;
     }
 
@@ -157,18 +159,55 @@ bool Connection::ConnToServer(std::string host, int port){
     return true;
 }
 
+bool Connection::handleClassifyConnection(){
+    Packet *pk = new Packet();
+    pk->appendData(CMD_IS_MAIN_CONNECTION);
+
+    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
+
+    delete pk;
+
+    int rc;
+    struct timeval time;
+
+    FD_SET(this->socketfd, &this->working_set);
+
+    time = this->timeout;
+
+    rc = select(this->socketfd, &this->working_set, NULL, NULL, &time);
+
+    if (rc == 0){
+        std::cerr << "timeout classify connection!!!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    int bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+    pk = new Packet(std::string(this->buffer,bytes));
+    int cmd = pk->getCMDHeader();
+    std::cout << "cmd respond: " << cmd << std::endl;
+
+    if (cmd == CMD_CLASSIFY_DONE){
+        std::cout << "classify connection done." << std::endl;
+    } else {
+        std::cerr << "fail classify conneciton!!! exit." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    delete pk;
+    return true;
+}
+
 bool Connection::sendLoginRequest(std::string username, std::string password){
     //username = "user1";
     //password = "user1";
-
+    Packet *pk;
+    int bytes, cmd;
     //send cmd to specify this connection is mainconnection
-    Packet *pkClassify = new Packet();
-    pkClassify->appendData(CMD_IS_MAIN_CONNECTION);
 
-    SSL_write(this->ssl,  &pkClassify->getData()[0], pkClassify->getData().size() );
+    this->handleClassifyConnection();
 
     //send login request
-    Packet *pk = new Packet();
+    pk = new Packet();
 
     pk->appendData(CMD_AUTHEN_LOGIN);
     pk->appendData(username);
@@ -181,30 +220,41 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
 
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
 
+    delete pk;
     std::cout << "send CMD request login finished " << std::endl;
 
     sleep(2);
 
     bzero(this->buffer, sizeof(this->buffer));
 
-    int bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+    struct timeval time = this->timeout;
+
+    fd_set fdset;
+    FD_ZERO(&fdset);
+    FD_SET(this->socketfd, &fdset);
+    int rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
+
+    if (rc == 0){
+        std::cerr << "timeout login request connection!!!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
 
     //std::cout << "read CMD reponse login finished " << bytes << std::endl;
 
-    Packet *pkr = new Packet(std::string(buffer,bytes));
-    int cmd = pkr->getCMDHeader();
+    pk = new Packet(std::string(buffer,bytes));
+    cmd = pk->getCMDHeader();
     std::cout << "cmd respond: " << cmd << std::endl;
     if (cmd == CMD_AUTHEN_SUCCESS) {
         std::cout << "login success" << std::endl;
-        std::string session = pkr->getContent();
+        std::string session = pk->getContent();
         std::cout << "session: " << session << std::endl;
     } else {
         std::cout << "login fail" << std::endl;
     }
 
-    delete pkClassify;
     delete pk;
-    delete pkr;
 
     return true;
 }

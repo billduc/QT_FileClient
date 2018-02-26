@@ -12,6 +12,7 @@ ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 }
 
 ManageConnection::~ManageConnection(){
+
     delete this->mainConnection;
     rep(i,this->listConnnection.size()){
         delete this->listConnnection.at(i);

@@ -21,9 +21,14 @@ private:
     SSL *ssl;
     char buffer[BUFFSIZE];
     bool is_mainConnecion;
+    struct timeval timeout;
+    fd_set working_set;
+
     void setNonBlocking(int &sock);
     SSL_CTX* InitCTX(std::string fileCert);
     void ShowCerts(SSL *ssl);
+
+    bool handleClassifyConnection();
 };
 
 #endif // CONNECTION_H

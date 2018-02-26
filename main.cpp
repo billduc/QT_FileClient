@@ -35,9 +35,9 @@ int main(int argc, char *argv[])
     //UploadFile *up = new UploadFile();
     //up->upFile("FILE////home/hydra/info.txt");
 
-//    uploadFile *upfile = new uploadFile();
+    //uploadFile *upfile = new uploadFile();
 
-    qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
+    //qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
     qmlRegisterType<ManageConnection>("managerConnecion",1,0,"ManageConnection");
 
     // Use platform-specific fonts instead of V-Play's default font

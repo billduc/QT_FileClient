@@ -1,6 +1,6 @@
 import VPlayApps 1.0
 import QtQuick 2.0
-import file 1.0
+//import file 1.0
 import managerConnecion 1.0
 
 App {
@@ -11,9 +11,9 @@ App {
     //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
     //licenseKey: "<generate one from https://v-play.net/licenseKey>"
 
-    UploadFile {
-         id: uploadfile
-    }
+//    UploadFile {
+//         id: uploadfile
+//    }
 
     ManageConnection{
         id: manageConnecion;
