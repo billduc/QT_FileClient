@@ -9,6 +9,8 @@ extern "C"
 ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 {
     this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->hostname = "localhost";
+    this->port = 443;
 }
 
 ManageConnection::~ManageConnection(){
@@ -63,10 +65,10 @@ void ManageConnection::setNonBlocking(int &sock) {
     }
 }
 
-bool ManageConnection::connectToServer(QString host, int port){
+bool ManageConnection::main_connectToServer(QString host, int port){
     this->mainConnection = new Connection(this->ctx);
 
-    return this->mainConnection->ConnToServer(host.toStdString(), port);
+    return this->mainConnection->ConnToServer(this->host.toStdString(), this->port);
 }
 
 bool ManageConnection::authenConnection(QString username, QString password){

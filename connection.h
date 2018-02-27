@@ -17,6 +17,7 @@ public:
 
 private:
     int socketfd ;
+    int id;
     SSL_CTX *ctx;
     SSL *ssl;
     char buffer[BUFFSIZE];

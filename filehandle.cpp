@@ -9,7 +9,7 @@ FileHandle::~FileHandle(){
 
 }
 
-int FileHandle::openFile(std::string fileName){
+bool FileHandle::openFile(std::string fileName){
     this->readStream.open(fileName.c_str(), std::ios::in|std::ios::binary); // modes for binary file  |std::ios::ate
     if (this->readStream.fail()) {
         std::cout << "Reading file '" << fileName << "' failed!" << std::endl; //  strerror(errno) <<
@@ -20,6 +20,25 @@ int FileHandle::openFile(std::string fileName){
     }
     std::cerr << "Unable to open file '" << fileName << " '" << std::endl; // << strerror(errno)
     return (false);
+}
+
+std::string FileHandle::getFileName(std::string filepath){
+    int post = -1;
+    //linux operator
+    for(int i = sizeof(filepath) - 1; i >=0; --i){
+        if (filepath[i] == '/')
+        {
+            post = i;
+            break;
+        }
+    }
+    if (post == -1)
+        return std::string(filepath);
+    else{
+        //cout << post  <<" " << filepath << " " << sizeof(filepath)<< " " << filepath.length() - post << endl;
+        std::string filename = filepath.substr(post+1, filepath.length() - post);
+        return filename;
+    }
 }
 
 char* FileHandle::readFileBlock(unsigned long &sizeInBytes){

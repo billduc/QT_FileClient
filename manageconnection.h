@@ -14,7 +14,6 @@ public:
 
     SSL_CTX * getCTX();
 
-
 private:
     Connection * mainConnection;
     std::vector<Connection*> listConnnection;
@@ -22,13 +21,15 @@ private:
 
     SSL_CTX* InitCTX(std::string fileCert);
     void setNonBlocking(int &sock);
-
+    QString hostname;
+    int port;
 
 signals:
 
 public slots:
-    bool connectToServer(QString host, int port);
+    bool main_connectToServer(QString host, int port);
     bool authenConnection(QString username, QString password);
+    bool file_connectToserver();
 };
 
 #endif // MANAGECONNECTION_H
