@@ -169,12 +169,12 @@ bool Connection::handleClassifyConnection(){
 
     int rc;
     struct timeval time;
-
+    FD_ZERO(&this->working_set);
     FD_SET(this->socketfd, &this->working_set);
 
     time = this->timeout;
 
-    rc = select(this->socketfd, &this->working_set, NULL, NULL, &time);
+    rc = select(this->socketfd + 1, &this->working_set, NULL, NULL, &time);
 
     if (rc == 0){
         std::cerr << "timeout classify connection!!!" << std::endl;
@@ -214,8 +214,6 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     pk->appendData(password);
 
     std::cout << "username: " << username << " passwork: " << password << std::endl;
-    //PACKET d = pk->getData();
-    //std::string da(d.begin(), d.end());
     std::cout << SSL_get_fd(this->ssl) << " send CMD request login "  << pk->getData().size() << " - " << pk->getData_stdString() << std::endl;
 
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
@@ -223,8 +221,7 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
     delete pk;
     std::cout << "send CMD request login finished " << std::endl;
 
-    sleep(2);
-
+    //read data respond from server.
     bzero(this->buffer, sizeof(this->buffer));
 
     struct timeval time = this->timeout;
@@ -252,6 +249,7 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
         std::cout << "session: " << session << std::endl;
     } else {
         std::cout << "login fail" << std::endl;
+        return false;
     }
 
     delete pk;

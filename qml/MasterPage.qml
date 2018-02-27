@@ -1,7 +1,6 @@
 import VPlayApps 1.0
 import QtQuick 2.2
 import QtQuick.Dialogs 1.0
-import file 1.0
 import managerConnecion 1.0
 
 ListPage {
@@ -9,9 +8,6 @@ ListPage {
     title: "File Client"
     property  var filepatch: "NULL"
 
-    UploadFile {
-        id: uploadfile
-    }
 
     FileDialog {
         id: fileDialog

@@ -37,6 +37,14 @@ Page {
             property real rowSpacingSize: Qt.platform.os === "ios"?dp(15):dp(10)
 
             Item {
+                id: itemStatus
+                Text {
+                    id: statusLogin
+                    text: qsTr("");
+                }
+            }
+
+            Item {
                 id: itemUsername
                 Layout.preferredWidth: content.itemSize
                 height: txtUsername.implicitHeight
@@ -130,12 +138,13 @@ Page {
     }
 
     function loginManual(){
-
-        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) )
-            container.state = qsTr("Master")
-        else
+        //Boolean check = manageConnecion.authenConnection(txtUsername.text,txtPassword.text);
+        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true)
+            container.state = qsTr("Master");
+        else{
             console.log("login fail");
-        //TODO
+            statusLogin.text = "login fail";
+        }
     }
 
 }
