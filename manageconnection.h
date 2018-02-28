@@ -12,11 +12,12 @@ public:
     explicit ManageConnection(QObject *parent = nullptr);
     ~ManageConnection();
 
-    SSL_CTX*    getCTX();
-    QString     get_Hostname();
-    int         get_Port();
-    void        set_Hostname(QString);
-    void        set_Port(int);
+    SSL_CTX*                    getCTX();
+    QString                     get_Hostname();
+    int                         get_Port();
+    void                        set_Hostname(QString);
+    void                        set_Port(int);
+
 
 private:
 
@@ -25,16 +26,17 @@ private:
     SSL_CTX*                    ctx;
     QString                     hostname;
     int                         port;
-
-    SSL_CTX*    InitCTX(std::string fileCert);
-    void        setNonBlocking(int &sock);
+    std::string                 session;
+    SSL_CTX*                    InitCTX(std::string fileCert);
+    void                        setNonBlocking(int &sock);
 
 signals:
 
 public slots:
-    bool        main_connectToServer(QString host, int port);
-    bool        authenConnection(QString username, QString password);
-    bool        file_connectToserver();
+    bool                        main_connectToServer(QString host, int port);
+    bool                        authenConnection(QString username, QString password);
+    int                         file_connectToserver();
+    bool                        sendRequestUpload(QString filepatch);
 };
 
 #endif // MANAGECONNECTION_H

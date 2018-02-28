@@ -13,7 +13,8 @@ ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
     this->port      = 443;
 }
 
-ManageConnection::~ManageConnection(){
+ManageConnection::~ManageConnection()
+{
 
     delete this->mainConnection;
     rep(i,this->listConnnection.size()){
@@ -25,7 +26,8 @@ ManageConnection::~ManageConnection(){
 
 
 SSL_CTX*
-ManageConnection::InitCTX(std::string fileCert) {
+ManageConnection::InitCTX(std::string fileCert)
+{
     SSL_CTX *ctx;
 
     SSL_library_init();
@@ -52,7 +54,8 @@ ManageConnection::InitCTX(std::string fileCert) {
 }
 
 void
-ManageConnection::setNonBlocking(int &sock) {
+ManageConnection::setNonBlocking(int &sock)
+{
     int opts = fcntl(sock,F_GETFL, 0);
     if (opts < 0) {
         std::cerr << "@log: Error getting socket flags" << std::endl;
@@ -68,45 +71,66 @@ ManageConnection::setNonBlocking(int &sock) {
 }
 
 bool
-ManageConnection::main_connectToServer(QString host, int port){
+ManageConnection::main_connectToServer(QString host, int port)
+{
     this->mainConnection = new Connection(this->ctx);
     return this->mainConnection->ConnToServer(this->hostname.toStdString(), this->port);
 }
 
 bool
-ManageConnection::authenConnection(QString username, QString password){
+ManageConnection::authenConnection(QString username, QString password)
+{
     return this->mainConnection->sendLoginRequest(username.toStdString(), password.toStdString());
 }
 
-bool
-ManageConnection::file_connectToserver(){
-    Connection * conn = new Connection(this->ctx);
+int
+ManageConnection::file_connectToserver()
+{
+    Connection * conn = new Connection(this->ctx, listConnnection.size());
     if (conn->ConnToServer(this->hostname.toStdString(), this->port)){
+        conn->set_session(this->mainConnection->get_session());
         listConnnection.pb(conn);
-        return true;
-    } else{
+        return conn->get_Id();
+    } else {
         delete conn;
-        return false;
+        return -1;
     }
 }
 
+bool
+ManageConnection::sendRequestUpload(QString filepatch)
+{
+    int id = this->file_connectToserver();
+
+    if (id == -1){
+        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        return -1;
+    }
+
+    this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+}
+
 QString
-ManageConnection::get_Hostname(){
+ManageConnection::get_Hostname()
+{
     return this->hostname;
 }
 
 void
-ManageConnection::set_Hostname(QString hostname){
+ManageConnection::set_Hostname(QString hostname)
+{
     this->hostname = hostname;
 }
 
 int
-ManageConnection::get_Port(){
+ManageConnection::get_Port()
+{
     return this->port;
 }
 
 void
-ManageConnection::set_Port(int port){
+ManageConnection::set_Port(int port)
+{
     this->port = port;
 }
 

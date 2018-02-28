@@ -5,24 +5,30 @@ FileHandle::FileHandle()
 
 }
 
-FileHandle::~FileHandle(){
+FileHandle::~FileHandle()
+{
 
 }
 
-bool FileHandle::openFile(std::string fileName){
-    this->readStream.open(fileName.c_str(), std::ios::in|std::ios::binary); // modes for binary file  |std::ios::ate
+bool
+FileHandle::openFile(std::string fileName)
+{
+    // modes for binary file  |std::ios::ate
+    this->readStream.open(fileName.c_str(), std::ios::in|std::ios::binary);
     if (this->readStream.fail()) {
-        std::cout << "Reading file '" << fileName << "' failed!" << std::endl; //  strerror(errno) <<
+        std::cout << "Reading file '" << fileName << "' failed!" << std::endl;
         return (false);
     }
     if (this->readStream.is_open()) {
         return (true);
     }
-    std::cerr << "Unable to open file '" << fileName << " '" << std::endl; // << strerror(errno)
+    std::cerr << "Unable to open file '" << fileName << " '" << std::endl;
     return (false);
 }
 
-std::string FileHandle::getFileName(std::string filepath){
+std::string
+FileHandle::getFileName(std::string filepath)
+{
     int post = -1;
     //linux operator
     for(int i = sizeof(filepath) - 1; i >=0; --i){
@@ -41,7 +47,9 @@ std::string FileHandle::getFileName(std::string filepath){
     }
 }
 
-char* FileHandle::readFileBlock(unsigned long &sizeInBytes){
+char*
+FileHandle::readFileBlock(unsigned long &sizeInBytes)
+{
     this->readStream.seekg(0, std::ios::end);
     std::ifstream::pos_type size = this->readStream.tellg();
     sizeInBytes = (unsigned long) size;
