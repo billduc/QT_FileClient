@@ -16,13 +16,11 @@ Connection::Connection(SSL_CTX * ctxp)
 }
 
 Connection::~Connection(){
-    //SSL_CTX_free(this->ctx);
     close(this->socketfd);
 }
 
 SSL_CTX* Connection::InitCTX(std::string fileCert) {
     SSL_CTX *ctx;
-
     SSL_library_init();
     OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
     SSL_load_error_strings();   /* Bring in and register error messages */
@@ -36,7 +34,6 @@ SSL_CTX* Connection::InitCTX(std::string fileCert) {
         abort();
     }
 
-    //"/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem"
     if ( SSL_CTX_use_certificate_file(ctx, fileCert.c_str(),SSL_FILETYPE_PEM) <= 0 )
     {
         ERR_print_errors_fp(stderr);
@@ -63,7 +60,6 @@ bool Connection::TCPconn(std::string ipAddr, int port){
     struct sockaddr_in serv_addr;
 
     server = gethostbyname(ipAddr.c_str());
-    //iServer = getaddrinfo()
 
     if ( server == NULL ){
         std::cerr << "@connection log: ERROR, no such host" << std::endl;
@@ -94,7 +90,7 @@ bool Connection::TLSconn(){
     SSL_set_connect_state(this->ssl);
 
     if (SSL_connect(this->ssl) == -1 ){
-        std::cerr <<"ERROR: ssl connection fail" << std::endl;
+        std::cerr << "ERROR: ssl connection fail" << std::endl;
         int ret = 888;
         SSL_get_error(this->ssl, ret);
         switch (ret) {
@@ -162,30 +158,23 @@ bool Connection::ConnToServer(std::string host, int port){
 bool Connection::handleClassifyConnection(){
     Packet *pk = new Packet();
     pk->appendData(CMD_IS_MAIN_CONNECTION);
-
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
-
     delete pk;
 
     int rc;
     struct timeval time;
     FD_ZERO(&this->working_set);
     FD_SET(this->socketfd, &this->working_set);
-
     time = this->timeout;
-
     rc = select(this->socketfd + 1, &this->working_set, NULL, NULL, &time);
-
     if (rc == 0){
         std::cerr << "timeout classify connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     int bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
     pk = new Packet(std::string(this->buffer,bytes));
     int cmd = pk->getCMDHeader();
     std::cout << "cmd respond: " << cmd << std::endl;
-
     if (cmd == CMD_CLASSIFY_DONE){
         std::cout << "classify connection done." << std::endl;
     } else {
@@ -220,22 +209,17 @@ bool Connection::sendLoginRequest(std::string username, std::string password){
 
     delete pk;
     std::cout << "send CMD request login finished " << std::endl;
-
     //read data respond from server.
     bzero(this->buffer, sizeof(this->buffer));
-
     struct timeval time = this->timeout;
-
     fd_set fdset;
     FD_ZERO(&fdset);
     FD_SET(this->socketfd, &fdset);
     int rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
-
     if (rc == 0){
         std::cerr << "timeout login request connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     bytes = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
 
     //std::cout << "read CMD reponse login finished " << bytes << std::endl;

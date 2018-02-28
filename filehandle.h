@@ -8,13 +8,13 @@ class FileHandle
 public:
     FileHandle();
     ~FileHandle();
-    bool openFile(std::string fileName);
-    char* readFileBlock(unsigned long &sizeInBytes);
-    std::string getFileName(std::string);
+    bool            openFile(std::string fileName);
+    char*           readFileBlock(unsigned long &sizeInBytes);
+    std::string     getFileName(std::string);
 private:
-    std::ofstream writeStream; //stream to read data from socket and write to file
-    std::ifstream readStream; //stream to read from file and send to socket
-    char buffer[MAXLINE];
+    std::ofstream   writeStream; //stream to read data from socket and write to file
+    std::ifstream   readStream; //stream to read from file and send to socket
+    char            buffer[MAXLINE];
 };
 
 #endif // FILEHANDLE_H

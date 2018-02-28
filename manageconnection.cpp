@@ -8,9 +8,9 @@ extern "C"
 
 ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 {
-    this->ctx = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
-    this->hostname = "localhost";
-    this->port = 443;
+    this->ctx       = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->hostname  = "localhost";
+    this->port      = 443;
 }
 
 ManageConnection::~ManageConnection(){
@@ -24,7 +24,8 @@ ManageConnection::~ManageConnection(){
 }
 
 
-SSL_CTX* ManageConnection::InitCTX(std::string fileCert) {
+SSL_CTX*
+ManageConnection::InitCTX(std::string fileCert) {
     SSL_CTX *ctx;
 
     SSL_library_init();
@@ -50,7 +51,8 @@ SSL_CTX* ManageConnection::InitCTX(std::string fileCert) {
     return ctx;
 }
 
-void ManageConnection::setNonBlocking(int &sock) {
+void
+ManageConnection::setNonBlocking(int &sock) {
     int opts = fcntl(sock,F_GETFL, 0);
     if (opts < 0) {
         std::cerr << "@log: Error getting socket flags" << std::endl;
@@ -65,17 +67,47 @@ void ManageConnection::setNonBlocking(int &sock) {
     }
 }
 
-bool ManageConnection::main_connectToServer(QString host, int port){
+bool
+ManageConnection::main_connectToServer(QString host, int port){
     this->mainConnection = new Connection(this->ctx);
-
-    return this->mainConnection->ConnToServer(this->host.toStdString(), this->port);
+    return this->mainConnection->ConnToServer(this->hostname.toStdString(), this->port);
 }
 
-bool ManageConnection::authenConnection(QString username, QString password){
+bool
+ManageConnection::authenConnection(QString username, QString password){
     return this->mainConnection->sendLoginRequest(username.toStdString(), password.toStdString());
 }
 
+bool
+ManageConnection::file_connectToserver(){
+    Connection * conn = new Connection(this->ctx);
+    if (conn->ConnToServer(this->hostname.toStdString(), this->port)){
+        listConnnection.pb(conn);
+        return true;
+    } else{
+        delete conn;
+        return false;
+    }
+}
 
+QString
+ManageConnection::get_Hostname(){
+    return this->hostname;
+}
 
+void
+ManageConnection::set_Hostname(QString hostname){
+    this->hostname = hostname;
+}
+
+int
+ManageConnection::get_Port(){
+    return this->port;
+}
+
+void
+ManageConnection::set_Port(int port){
+    this->port = port;
+}
 
 
