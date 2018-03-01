@@ -26,6 +26,17 @@ FileHandle::openFile(std::string fileName)
     return (false);
 }
 
+void
+FileHandle::format_FileName(std::string& filename)
+{
+    //check filepatch format QML
+    if (filename.find("file://")){
+        filename.erase(filename.begin(), filename.begin()+7);
+        std::cout << "!Log file: file path formated: " << filename << std::endl;
+    }
+}
+
+
 std::string
 FileHandle::getFileName(std::string filepath)
 {
@@ -56,5 +67,5 @@ FileHandle::readFileBlock(unsigned long &sizeInBytes)
 
     this->readStream.seekg(0, std::ios::beg);
 
-    char * memblock = new char[size];
+    char* memblock = new char[size];
 }

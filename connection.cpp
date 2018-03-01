@@ -279,7 +279,9 @@ bool
 Connection::sendRequsetUpload(std::string filepatch)
 {
     Packet*     pk;
-    int         bytes, cmd;
+    int         bytes;
+    int         cmd;
+    int         rc;
     std::string filename    = this->fileHandle->getFileName(filepatch);
 
     this->is_fileConnection = true;
@@ -305,7 +307,9 @@ Connection::sendRequsetUpload(std::string filepatch)
     FD_ZERO(&fdset);
     FD_SET(this->socketfd, &fdset);
 
-    int rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
+    rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
+
+    std::cerr << "log before select " << SSL_get_fd(this->ssl) << " " << rc << std::endl;
 
     if (rc == 0){
         std::cerr << "timeout login request connection!!!" << std::endl;
@@ -313,16 +317,22 @@ Connection::sendRequsetUpload(std::string filepatch)
     }
 
     bytes   = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+    std::cerr << "log crash because build packet " << bytes << std::endl;
     pk      = new Packet(std::string(buffer,bytes));
-    cmd     = pk->getCMDHeader();
+    std::cerr << "log crash because get cmd header " << bytes << std::endl;
+    if (pk->IsAvailableData())
+        cmd = pk->getCMDHeader();
 
-    //std::cout << "read CMD reponse login finished " << bytes << std::endl;
+    std::cout << "read CMD reponse login finished " << bytes << std::endl;
 
     std::cout << "cmd respond: " << cmd << std::endl;
+
     if (cmd == CMD_UPLOAD_READY) {
         std::cout << "ready to upload file" << std::endl;
-        std::string fileUrl = pk->getContent();
-        std::cout << "file url: " << fileUrl << std::endl;
+        if (pk->IsAvailableData()){
+            std::string fileUrl = pk->getContent();
+            std::cout << "file url: " << fileUrl << std::endl;
+        }
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
@@ -331,6 +341,78 @@ Connection::sendRequsetUpload(std::string filepatch)
     return true;
 }
 
+
+bool Connection::fsend(std::string filepath){
+    std::ifstream ifFile(filepath.c_str(), std::ios::in | std::ios::binary);
+
+    ifFile.seekg(0, std::ios::end);
+    long long fileSize = ifFile.tellg();
+
+    std::cout << "fileSize : " << fileSize << std::endl;
+
+    size_t total_chunks = fileSize / sizeof(this->buffer);
+    size_t size_last_chunk = fileSize % sizeof(this->buffer);
+
+    unsigned int dataSend = 0;
+
+    int count = 1;
+
+    for(int i = 0; i < total_chunks; ++i){
+        ifFile.read(this->buffer, sizeof(this->buffer));
+        int si = SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
+        if (si < 0){
+            std::cerr << " ssl wirte data error !!!! " << si << std::endl;
+            int ret = 333;
+            SSL_get_error(this->ssl,ret);
+            switch ( ret) {
+                case SSL_ERROR_WANT_READ:
+                    std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_WRITE:
+                    std::cerr << "SSL_ERROR_WANT_WRITE" << std::endl;
+                    break;
+                case SSL_ERROR_ZERO_RETURN:
+                    std::cerr << "SSL_ERROR_ZERO_RETURN" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_X509_LOOKUP:
+                    std::cerr << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
+                    break;
+                case SSL_ERROR_SYSCALL:
+                    std::cerr << "SSL_ERROR_SYSCALL" << std::endl;
+                    break;
+                case SSL_ERROR_NONE:
+                    std::cerr << "SSL_ERROR_NONE" << std::endl;
+                    break;
+                case SSL_ERROR_WANT_CONNECT:
+                    std::cerr << "SSL_ERROR_WANT_CONNECT" << std::endl;
+                    break;
+                default:
+                    std::cerr << "SSL_ERROR... " << ret <<  std::endl;
+                    break;
+            }
+        } else{
+            dataSend += si;
+            std::cout << " ssl send ok " << count  << ": " << si <<  " - " << sizeof(this->buffer) << std::endl;
+            ++count;
+        }
+    }
+
+    if (size_last_chunk > 0){
+        ifFile.read(this->buffer, size_last_chunk);
+        int si = SSL_write(this->ssl, this->buffer, size_last_chunk);
+        if (si < 0)
+            std::cerr <<" ssl wirte data error !!!!" << std::endl;
+        else{
+            dataSend += si;
+            std::cout << " ssl send ok " << count  << ": " << si <<  " - " << size_last_chunk << std::endl;
+            ++count;
+        }
+    }
+
+    std::cout << "data sended: " << dataSend  << " of  Datasize: " << fileSize << std::endl;
+    ///close(SSL_get_fd(this->ssl));
+    return true;
+}
 
 
 

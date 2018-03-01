@@ -21,6 +21,7 @@ public:
     int                 get_Id(){return this->Id;}
     void                set_Id(int id){this->Id = id;}
 
+    bool                fsend(std::string filepath);
 private:
     int                 socketfd;
     int                 Id;

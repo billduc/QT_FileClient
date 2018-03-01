@@ -58,7 +58,8 @@ ListPage {
             text: qsTr("upload")
 
             onClicked: {
-                uploadfile.upFile(filepatch);
+                //uploadfile.upFile(filepatch);
+                manageConnecion.sendRequestUpload(filepatch);
                 container.hideOptions()
 
                 // Remove selected item and notify listview model

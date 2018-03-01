@@ -51,6 +51,7 @@ Page {
 
                 AppTextField {
                     id: txtUsername
+                    text: qsTr("user1")
                     showClearButton: true
                     font.pixelSize: content.textSize
                     placeholderText: qsTr("Username")
@@ -76,6 +77,7 @@ Page {
 
                 AppTextField {
                     id: txtPassword
+                    text: qsTr("user1")
                     showClearButton: true
                     font.pixelSize: content.textSize
                     placeholderText: qsTr("Password")

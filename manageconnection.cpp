@@ -106,6 +106,9 @@ ManageConnection::sendRequestUpload(QString filepatch)
         std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
         return -1;
     }
+    else{
+        std::cout <<"Log managerConnection: create file connecion success" << std::endl;
+    }
 
     this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
 }
