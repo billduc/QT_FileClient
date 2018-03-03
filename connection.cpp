@@ -333,6 +333,10 @@ Connection::sendRequsetUpload(std::string filepatch)
             std::string fileUrl = pk->getContent();
             std::cout << "file url: " << fileUrl << std::endl;
         }
+
+        this->fileHandle->format_FileName(filepatch);
+        //std::cout << filepatch << std::endl;
+        this->fsend(filepatch);
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
@@ -350,8 +354,8 @@ bool Connection::fsend(std::string filepath){
 
     std::cout << "fileSize : " << fileSize << std::endl;
 
-    size_t total_chunks = fileSize / sizeof(this->buffer);
-    size_t size_last_chunk = fileSize % sizeof(this->buffer);
+    size_t total_chunks     = fileSize / sizeof(this->buffer);
+    size_t size_last_chunk  = fileSize % sizeof(this->buffer);
 
     unsigned int dataSend = 0;
 

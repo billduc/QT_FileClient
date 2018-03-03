@@ -30,10 +30,11 @@ void
 FileHandle::format_FileName(std::string& filename)
 {
     //check filepatch format QML
-    if (filename.find("file://")){
+    //if (filename.find("file://")){
         filename.erase(filename.begin(), filename.begin()+7);
         std::cout << "!Log file: file path formated: " << filename << std::endl;
-    }
+    //}
+    return;
 }
 
 
