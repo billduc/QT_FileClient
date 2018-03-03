@@ -141,6 +141,12 @@ Page {
 
     function loginManual(){
         //Boolean check = manageConnecion.authenConnection(txtUsername.text,txtPassword.text);
+
+        if (manageConnecion.main_connectToServer("localhost","443") )
+            console.log("connection success");
+        else
+            console.log("conneciton fail");
+
         if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true)
             container.state = qsTr("Master");
         else{

@@ -80,6 +80,7 @@ ManageConnection::main_connectToServer(QString host, int port)
 bool
 ManageConnection::authenConnection(QString username, QString password)
 {
+    //this->main_connectToServer();
     return this->mainConnection->sendLoginRequest(username.toStdString(), password.toStdString());
 }
 

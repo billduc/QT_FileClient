@@ -27,12 +27,12 @@ App {
 
 
     Component.onCompleted: {
-
+/*
         if (manageConnecion.main_connectToServer("localhost","443") )
             console.log("connection success");
         else
             console.log("conneciton fail");
-
+*/
     }
 
     Rectangle{
