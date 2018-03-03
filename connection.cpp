@@ -18,6 +18,7 @@ Connection::Connection(SSL_CTX * ctxp, int id) : Id(id)
 }
 
 Connection::~Connection(){
+    SSL_free(this->ssl);
     close(this->socketfd);
     delete this->fileHandle;
 }

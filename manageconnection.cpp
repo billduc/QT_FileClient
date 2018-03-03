@@ -111,6 +111,9 @@ ManageConnection::sendRequestUpload(QString filepatch)
     }
 
     this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+
+    delete this->listConnnection.at(id);
+    this->listConnnection.erase(this->listConnnection.begin()+id);
 }
 
 QString
