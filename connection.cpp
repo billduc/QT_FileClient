@@ -361,7 +361,7 @@ bool Connection::fsend(std::string filepath){
     unsigned int dataSend = 0;
 
     int count = 1;
-
+    ifFile.seekg (0, ifFile.beg);
     for(int i = 0; i < total_chunks; ++i){
         ifFile.read(this->buffer, sizeof(this->buffer));
         int si = SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
