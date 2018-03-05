@@ -144,11 +144,14 @@ Page {
 
         if (manageConnecion.main_connectToServer("localhost","443") )
             console.log("connection success");
-        else
+        else{
             console.log("conneciton fail");
+            statusLogin.text = "cannot connect to server";
+        }
 
         if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true)
-            container.state = qsTr("Master");
+            //container.state = qsTr("Master");
+            container.state = qsTr("User");
         else{
             console.log("login fail");
             statusLogin.text = "login fail";

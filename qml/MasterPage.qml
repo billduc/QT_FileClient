@@ -47,8 +47,6 @@ ListPage {
         }
     }
 
-
-
     model: []
 
     delegate: SwipeOptionsContainer {

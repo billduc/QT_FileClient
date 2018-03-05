@@ -58,7 +58,15 @@ App {
                         target: mainLoader
                         source: Qt.resolvedUrl("MasterPage.qml")
                     }
+                },
+                State{
+                    name: "User"
+                    PropertyChanges {
+                        target: mainLoader
+                        source: Qt.resolvedUrl("userPage.qml");
+                    }
                 }
+
             ]
             Component.onCompleted:
             {

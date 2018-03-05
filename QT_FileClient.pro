@@ -61,4 +61,5 @@ HEADERS += \
     manageconnection.h
 
 DISTFILES += \
-    qml/login.qml
+    qml/login.qml \
+    qml/userPage.qml
