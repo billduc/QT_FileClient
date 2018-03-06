@@ -141,4 +141,20 @@ ManageConnection::set_Port(int port)
     this->port = port;
 }
 
+bool
+ManageConnection::send_CMD_MSG_FILE(){
+    int id = this->file_connectToserver();
 
+    if (id == -1){
+        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        return -1;
+    }
+    else{
+        std::cout <<"Log managerConnection: create file connecion success" << std::endl;
+    }
+
+    this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+
+    delete this->listConnnection.at(id);
+    this->listConnnection.erase(this->listConnnection.begin()+id);
+}

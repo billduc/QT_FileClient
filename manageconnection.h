@@ -18,7 +18,6 @@ public:
     void                        set_Hostname(QString);
     void                        set_Port(int);
 
-
 private:
 
     Connection*                 mainConnection;
@@ -37,6 +36,7 @@ public slots:
     bool                        authenConnection(QString username, QString password);
     int                         file_connectToserver();
     bool                        sendRequestUpload(QString filepatch);
+    bool                        send_CMD_MSG_FILE(QString _sender, QString _receiver, QString _urlfile);
 };
 
 #endif // MANAGECONNECTION_H
