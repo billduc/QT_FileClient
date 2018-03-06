@@ -14,7 +14,7 @@ App {
 //    UploadFile {
 //         id: uploadfile
 //    }
-
+    property string currentUser: ""
     ManageConnection{
         id: manageConnecion;
     }
@@ -65,7 +65,15 @@ App {
                         target: mainLoader
                         source: Qt.resolvedUrl("userPage.qml");
                     }
+                },
+                State{
+                    name: "File"
+                    PropertyChanges {
+                        target: mainLoader
+                        source: Qt.resolvedUrl("filePage.qml");
+                    }
                 }
+
 
             ]
             Component.onCompleted:

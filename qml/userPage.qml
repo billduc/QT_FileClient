@@ -2,10 +2,17 @@ import VPlayApps 1.0
 import QtQuick 2.0
 
 Page {
-
+    id: userPage
+    title: "Users"
+    //Component { id:
     AppListView {
+        id: listUsers
         delegate: SimpleRow {
-            onSelected: container.state = "Master"
+            //onSelected: container.state = "Master"
+            onSelected: {
+                currentUser = text
+                container.state = "File"
+            }
         }
         model: [
           { text: "user2",

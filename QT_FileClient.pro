@@ -30,7 +30,14 @@ SOURCES += main.cpp \
     connection.cpp \
     packet.cpp \
     filehandle.cpp \
-    manageconnection.cpp
+    manageconnection.cpp \
+    connection.cpp \
+    filehandle.cpp \
+    main.cpp \
+    manageconnection.cpp \
+    md5.cpp \
+    packet.cpp \
+    uploadfile.cpp
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -58,8 +65,58 @@ HEADERS += \
     connection.h \
     packet.h \
     filehandle.h \
-    manageconnection.h
+    manageconnection.h \
+    connection.h \
+    filehandle.h \
+    filesys.h \
+    manageconnection.h \
+    md5.h \
+    packet.h \
+    uploadfile.h
 
 DISTFILES += \
     qml/login.qml \
-    qml/userPage.qml
+    qml/userPage.qml \
+    qml/filePage.qml \
+    image/file.jpg \
+    image/add-page.png \
+    image/cancel.png \
+    image/checked.png \
+    image/doc.png \
+    image/down.png \
+    image/download-file.png \
+    image/download.png \
+    image/file.png \
+    image/folder.png \
+    image/icon.png \
+    image/jpg.png \
+    image/json-file.png \
+    image/mp3.png \
+    image/newfile.png \
+    image/newfile1.png \
+    image/pdf.png \
+    image/png.png \
+    image/readjson.png \
+    image/txt.png \
+    image/download.svg \
+    image/file.jpg \
+    image/txt.png \
+    image/readjson.png \
+    image/png.png \
+    image/pdf.png \
+    image/newfile1.png \
+    image/newfile.png \
+    image/mp3.png \
+    image/json-file.png \
+    image/jpg.png \
+    image/icon.png \
+    image/folder.png \
+    image/file.png \
+    image/download-file.png \
+    image/download.png \
+    image/down.png \
+    image/doc.png \
+    image/checked.png \
+    image/cancel.png \
+    image/add-page.png \
+    image/download.svg
