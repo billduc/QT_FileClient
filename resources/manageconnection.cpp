@@ -24,7 +24,6 @@ ManageConnection::~ManageConnection()
     SSL_CTX_free(this->ctx);
 }
 
-
 SSL_CTX*
 ManageConnection::InitCTX(std::string fileCert)
 {
@@ -105,17 +104,37 @@ ManageConnection::sendRequestUpload(QString filepatch)
 
     if (id == -1){
         std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
-        return -1;
+        return false;
     }
     else{
         std::cout <<"Log managerConnection: create file connecion success" << std::endl;
     }
 
-    this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+    this->listConnnection.at(id)->send_Requset_Upload(filepatch.toStdString());
 
     delete this->listConnnection.at(id);
     this->listConnnection.erase(this->listConnnection.begin()+id);
 }
+
+bool
+ManageConnection::share_File(QString sender, QString receiver, QString filepatch)
+{
+    int id = this->file_connectToserver();
+
+    if (id == -1){
+        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        return false;
+    }
+    else{
+        std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
+    }
+
+    //this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+    this->listConnnection.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
+    delete this->listConnnection.at(id);
+    this->listConnnection.erase(this->listConnnection.begin()+id);
+}
+
 
 QString
 ManageConnection::get_Hostname()
@@ -141,20 +160,4 @@ ManageConnection::set_Port(int port)
     this->port = port;
 }
 
-bool
-ManageConnection::send_CMD_MSG_FILE(QString _sender, QString _receiver, QString _urlfile){
-    int id = this->file_connectToserver();
 
-    if (id == -1){
-        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
-        return -1;
-    }
-    else{
-        std::cout <<"Log managerConnection: create file connecion success" << std::endl;
-    }
-
-    //this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
-
-    delete this->listConnnection.at(id);
-    this->listConnnection.erase(this->listConnnection.begin()+id);
-}

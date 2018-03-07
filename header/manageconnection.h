@@ -36,7 +36,8 @@ public slots:
     bool                        authenConnection(QString username, QString password);
     int                         file_connectToserver();
     bool                        sendRequestUpload(QString filepatch);
-    bool                        send_CMD_MSG_FILE(QString _sender, QString _receiver, QString _urlfile);
+    bool                        share_File(QString sender, QString receiver, QString filepatch);
+
 };
 
 #endif // MANAGECONNECTION_H

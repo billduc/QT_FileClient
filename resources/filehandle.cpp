@@ -67,7 +67,6 @@ FileHandle::format_FileName(std::string& filename)
     return;
 }
 
-
 std::string
 FileHandle::get_File_Name(std::string filepath)
 {

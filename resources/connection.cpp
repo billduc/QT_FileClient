@@ -277,7 +277,7 @@ Connection::sendLoginRequest(std::string username, std::string password)
 }
 
 bool
-Connection::sendRequsetUpload(std::string filepatch)
+Connection::send_Requset_Upload(std::string filepatch)
 {
     Packet*     pk;
     int         bytes;
@@ -318,9 +318,7 @@ Connection::sendRequsetUpload(std::string filepatch)
     }
 
     bytes   = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
-    std::cerr << "log crash because build packet " << bytes << std::endl;
     pk      = new Packet(std::string(buffer,bytes));
-    std::cerr << "log crash because get cmd header " << bytes << std::endl;
     if (pk->IsAvailableData())
         cmd = pk->getCMDHeader();
 
@@ -331,20 +329,27 @@ Connection::sendRequsetUpload(std::string filepatch)
     if (cmd == CMD_UPLOAD_READY) {
         std::cout << "ready to upload file" << std::endl;
         if (pk->IsAvailableData()){
-            std::string fileUrl = pk->getContent();
-            std::cout << "file url: " << fileUrl << std::endl;
+            this->_urlFileServer = pk->getContent();
+            std::cout << "file url: " << this->_urlFileServer << std::endl;
         }
 
         this->_file->format_FileName(filepatch);
         //std::cout << filepatch << std::endl;
         //this->fsend(filepatch);
         this->send_File(filepatch);
+
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
     }
 
     return true;
+}
+
+bool
+Connection::share_File(std::string _sender, std::string _receiver, std::string _filepatch){
+    this->send_Requset_Upload(_filepatch);
+    this->send_CMD_MSG_FILE(_sender, _receiver);
 }
 
 
@@ -461,7 +466,21 @@ Connection::send_File(std::string _filepatch){
     return true;
 }
 
+bool
+Connection::send_CMD_MSG_FILE(std::string _sender, std::string _receiver)
+{
+    Packet*     pk;
+    //send CMD_MSG_FILE
+    pk = new Packet();
 
+    pk->appendData(CMD_MSG_FILE);
+    pk->appendData(this->session);
+    pk->appendData(_sender);
+    pk->appendData(_receiver);
+    pk->appendData(this->_file->get_Size_stdString());
+
+    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+}
 
 
 

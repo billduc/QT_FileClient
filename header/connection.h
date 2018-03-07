@@ -15,7 +15,8 @@ public:
     bool                TLSconn();
     bool                ConnToServer(std::string host, int port);
     bool                sendLoginRequest(std::string username, std::string password);
-    bool                sendRequsetUpload(std::string filepatch);
+    bool                send_Requset_Upload(std::string filepatch);
+    bool                share_File(std::string sender, std::string receiver, std::string filepatch);
     std::string         get_session() {return session;}
     void                set_session(std::string s) {session = s;}
     int                 get_Id() {return this->Id;}
@@ -36,11 +37,13 @@ private:
     fd_set              working_set;
     std::string         session;
     FileHandle*         _file;
+    std::string         _urlFileServer;
 
     void                set_Non_Blocking(int &sock);
     void                show_Certs(SSL *ssl);
     bool                handle_Classify_Connection();
     SSL_CTX*            InitCTX(std::string fileCert);
+    bool                send_CMD_MSG_FILE(std::string _sender, std::string _receiver);
 };
 
 #endif // CONNECTION_H
