@@ -1,4 +1,4 @@
-#include "connection.h"
+#include "../header/connection.h"
 
 extern "C"
 {
@@ -14,13 +14,13 @@ Connection::Connection(SSL_CTX * ctxp, int id) : Id(id)
     this->timeout.tv_usec       = 0;
     this->is_mainConnecion      = false;
     this->is_fileConnection     = false;
-    this->fileHandle            = new FileHandle();
+    this->_file                 = new FileHandle();
 }
 
 Connection::~Connection(){
     SSL_free(this->ssl);
     close(this->socketfd);
-    delete this->fileHandle;
+    delete this->_file;
 }
 
 SSL_CTX*
@@ -133,7 +133,7 @@ Connection::TLSconn()
 }
 
 void
-Connection::setNonBlocking(int &sock)
+Connection::set_Non_Blocking(int &sock)
 {
     int opts = fcntl(sock,F_GETFL, 0);
     if (opts < 0) {
@@ -168,7 +168,7 @@ Connection::ConnToServer(std::string host, int port)
 }
 
 bool
-Connection::handleClassifyConnection()
+Connection::handle_Classify_Connection()
 {
     Packet *pk = new Packet();
 
@@ -222,7 +222,7 @@ Connection::sendLoginRequest(std::string username, std::string password)
     //send cmd to specify this connection is mainconnection
     this->is_fileConnection = false;
     this->is_mainConnecion  = true;
-    this->handleClassifyConnection();
+    this->handle_Classify_Connection();
 
     //send login request
     pk = new Packet();
@@ -283,11 +283,11 @@ Connection::sendRequsetUpload(std::string filepatch)
     int         bytes;
     int         cmd;
     int         rc;
-    std::string filename    = this->fileHandle->getFileName(filepatch);
+    std::string filename    = this->_file->get_File_Name(filepatch);
 
     this->is_fileConnection = true;
     this->is_mainConnecion  = false;
-    this->handleClassifyConnection();
+    this->handle_Classify_Connection();
 
     //send login request
     pk = new Packet();
@@ -335,9 +335,10 @@ Connection::sendRequsetUpload(std::string filepatch)
             std::cout << "file url: " << fileUrl << std::endl;
         }
 
-        this->fileHandle->format_FileName(filepatch);
+        this->_file->format_FileName(filepatch);
         //std::cout << filepatch << std::endl;
-        this->fsend(filepatch);
+        //this->fsend(filepatch);
+        this->send_File(filepatch);
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
@@ -347,7 +348,8 @@ Connection::sendRequsetUpload(std::string filepatch)
 }
 
 
-bool Connection::fsend(std::string filepath){
+bool Connection::fsend(std::string filepath)
+{
     std::ifstream ifFile(filepath.c_str(), std::ios::in | std::ios::binary);
 
     ifFile.seekg(0, std::ios::end);
@@ -419,7 +421,45 @@ bool Connection::fsend(std::string filepath){
     return true;
 }
 
+/*
+ * send file to server
+ * @_filepatch patch of file to send to server. (fomated according operation)
+ */
+bool
+Connection::send_File(std::string _filepatch){
+    long long   _size;
+    long long   _dataSend   = 0;
+    int         _count       = 1;
+    this->_file->set_File(_filepatch);
+    this->_file->open_File_To_Read();
+    _size = this->_file->get_Size();
 
+    size_t _totalChunks     =   _size / BUFFSIZE;
+    size_t _sizeLastChunk   =   _size % BUFFSIZE;
+
+
+    rep(i,_totalChunks){
+        bzero(this->buffer, BUFFSIZE);
+        this->_file->read_File_Block(this->buffer, BUFFSIZE);
+        int si = SSL_write(this->ssl, this->buffer, BUFFSIZE);
+        _dataSend += si;
+        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(this->buffer) << std::endl;
+        ++_count;
+    }
+
+    if (_sizeLastChunk > 0){
+        bzero(this->buffer, BUFFSIZE);
+        this->_file->read_File_Block(this->buffer, _sizeLastChunk);
+        int si = SSL_write(this->ssl, this->buffer, _sizeLastChunk);
+        _dataSend += si;
+        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << _sizeLastChunk << std::endl;
+        ++_count;
+    }
+
+    std::cout << "data sended: " << _dataSend  << " of  Datasize: " << _size << std::endl;
+    this->_file->close_Read_Stream();
+    return true;
+}
 
 
 

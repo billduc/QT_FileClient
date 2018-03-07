@@ -1,4 +1,4 @@
-#include "manageconnection.h"
+#include "../header/manageconnection.h"
 
 extern "C"
 {
@@ -142,7 +142,7 @@ ManageConnection::set_Port(int port)
 }
 
 bool
-ManageConnection::send_CMD_MSG_FILE(){
+ManageConnection::send_CMD_MSG_FILE(QString _sender, QString _receiver, QString _urlfile){
     int id = this->file_connectToserver();
 
     if (id == -1){
@@ -153,7 +153,7 @@ ManageConnection::send_CMD_MSG_FILE(){
         std::cout <<"Log managerConnection: create file connecion success" << std::endl;
     }
 
-    this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
+    //this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
 
     delete this->listConnnection.at(id);
     this->listConnnection.erase(this->listConnnection.begin()+id);

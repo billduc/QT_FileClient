@@ -46,7 +46,6 @@
 #define CMF_SHARE_FINISH        15
 
 #define MAXCONN                 1000
-#define	MAXLINE                 4096	/* max text line length */
 #define	BUFFSIZE                4096	/* buffer size for reads and writes */
 
 #define CMD_IS_MAIN_CONNECTION  88

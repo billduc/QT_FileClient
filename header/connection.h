@@ -17,11 +17,13 @@ public:
     bool                sendLoginRequest(std::string username, std::string password);
     bool                sendRequsetUpload(std::string filepatch);
     std::string         get_session() {return session;}
-    void                set_session(std::string s){session = s;}
-    int                 get_Id(){return this->Id;}
-    void                set_Id(int id){this->Id = id;}
+    void                set_session(std::string s) {session = s;}
+    int                 get_Id() {return this->Id;}
+    void                set_Id(int id) {this->Id = id;}
 
     bool                fsend(std::string filepath);
+    bool                send_File(std::string filepatch);
+
 private:
     int                 socketfd;
     int                 Id;
@@ -33,11 +35,11 @@ private:
     struct timeval      timeout;
     fd_set              working_set;
     std::string         session;
-    FileHandle*         fileHandle;
+    FileHandle*         _file;
 
-    void                setNonBlocking(int &sock);
-    void                ShowCerts(SSL *ssl);
-    bool                handleClassifyConnection();
+    void                set_Non_Blocking(int &sock);
+    void                show_Certs(SSL *ssl);
+    bool                handle_Classify_Connection();
     SSL_CTX*            InitCTX(std::string fileCert);
 };
 

@@ -9,10 +9,10 @@
 #include <QGuiApplication>
 #include <QObject>
 
-#include "uploadfile.h"
-#include "md5.h"
-#include "connection.h"
-#include "manageconnection.h"
+#include "header/uploadfile.h"
+#include "header/md5.h"
+#include "header/connection.h"
+#include "header/manageconnection.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -26,16 +26,6 @@ int main(int argc, char *argv[])
 
     string md5code = md5("test");
     std::cout << md5code << std::endl;
-
-    //Connection *con = new Connection();
-    //con->ConnToServer("172.16.80.26",443);
-    //con->ConnToServer("localhost",443);
-    //sleep(3);
-    //con->sendLoginRequest("fd","Asdf");
-    //UploadFile *up = new UploadFile();
-    //up->upFile("FILE////home/hydra/info.txt");
-
-    //uploadFile *upfile = new uploadFile();
 
     //qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
     qmlRegisterType<ManageConnection>("managerConnecion",1,0,"ManageConnection");

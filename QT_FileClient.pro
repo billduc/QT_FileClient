@@ -25,19 +25,13 @@ LIBS += -L/usr/lib -lssl -lcrypto
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    uploadfile.cpp \
-    md5.cpp \
-    connection.cpp \
-    packet.cpp \
-    filehandle.cpp \
-    manageconnection.cpp \
-    connection.cpp \
-    filehandle.cpp \
-    main.cpp \
-    manageconnection.cpp \
-    md5.cpp \
-    packet.cpp \
-    uploadfile.cpp
+    resources/connection.cpp \
+    resources/filehandle.cpp \
+    resources/manageconnection.cpp \
+    resources/md5.cpp \
+    resources/packet.cpp \
+    resources/uploadfile.cpp
+
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -59,20 +53,13 @@ macx {
 }
 
 HEADERS += \
-    uploadfile.h \
-    md5.h \
-    filesys.h \
-    connection.h \
-    packet.h \
-    filehandle.h \
-    manageconnection.h \
-    connection.h \
-    filehandle.h \
-    filesys.h \
-    manageconnection.h \
-    md5.h \
-    packet.h \
-    uploadfile.h
+    header/connection.h \
+    header/filehandle.h \
+    header/filesys.h \
+    header/manageconnection.h \
+    header/md5.h \
+    header/packet.h \
+    header/uploadfile.h
 
 DISTFILES += \
     qml/login.qml \
