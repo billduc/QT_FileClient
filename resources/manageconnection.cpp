@@ -73,21 +73,21 @@ bool
 ManageConnection::main_connectToServer(QString host, int port)
 {
     this->mainConnection = new Connection(this->ctx);
-    return this->mainConnection->ConnToServer(this->hostname.toStdString(), this->port);
+    return this->mainConnection->conn_To_Server(this->hostname.toStdString(), this->port);
 }
 
 bool
 ManageConnection::authenConnection(QString username, QString password)
 {
     //this->main_connectToServer();
-    return this->mainConnection->sendLoginRequest(username.toStdString(), password.toStdString());
+    return this->mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
 }
 
 int
 ManageConnection::file_connectToserver()
 {
     Connection * conn = new Connection(this->ctx, listConnnection.size());
-    if (conn->ConnToServer(this->hostname.toStdString(), this->port)){
+    if (conn->conn_To_Server(this->hostname.toStdString(), this->port)){
         conn->set_session(this->mainConnection->get_session());
         listConnnection.pb(conn);
         return conn->get_Id();
@@ -134,7 +134,6 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
     delete this->listConnnection.at(id);
     this->listConnnection.erase(this->listConnnection.begin()+id);
 }
-
 
 QString
 ManageConnection::get_Hostname()

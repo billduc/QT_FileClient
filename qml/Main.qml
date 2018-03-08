@@ -10,7 +10,10 @@ App {
     //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
     //licenseKey: "<generate one from https://v-play.net/licenseKey>"
 
-    property string currentUser: ""
+    property string currentUser:    ""
+    property string _userName:      ""
+    property string _password:      ""
+
     ManageConnection{
         id: manageConnecion;
     }

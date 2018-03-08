@@ -15,11 +15,11 @@ public:
     void            close_Read_Stream();
     void            read_File_Block(char* buffer, int sizeblock);
     std::string     get_File_Name(std::string);
-    void            format_FileName(std::string&);
+    void            format_File_Patch(std::string&);
     long long       get_Size();
     std::string     get_Size_stdString();
     void            set_File(std::string);
-
+    std::string     get_File_Patch();
 private:
     std::string     _filePatch;
     long long       _fileSize;

@@ -150,7 +150,7 @@ Connection::set_Non_Blocking(int &sock)
 }
 
 bool
-Connection::ConnToServer(std::string host, int port)
+Connection::conn_To_Server(std::string host, int port)
 {
     if ( !this->TCPconn(host, port) ){
         std::cerr << "ERROR: Fail to connecting to server" << std::endl;
@@ -213,10 +213,8 @@ Connection::handle_Classify_Connection()
 }
 
 bool
-Connection::sendLoginRequest(std::string username, std::string password)
+Connection::send_Login_Request(std::string username, std::string password)
 {
-    //username = "user1";
-    //password = "user1";
     Packet*     pk;
     int         bytes, cmd;
     //send cmd to specify this connection is mainconnection
@@ -288,13 +286,16 @@ Connection::send_Requset_Upload(std::string filepatch)
     this->is_fileConnection = true;
     this->is_mainConnecion  = false;
     this->handle_Classify_Connection();
-
-    //send login request
+    std::cout << "#log Connecion: before set file patch "<< filepatch << "inner class: " << this->_file->get_File_Patch() << std::endl;
+    this->_file->format_File_Patch(filepatch);
+    this->_file->set_File(filepatch);
+    std::cout << "#log Connecion: before set file patch "<< filepatch << "inner class: " << this->_file->get_File_Patch() << std::endl;
+    //build and send login request CMD_UPLOAD_FILE
     pk = new Packet();
-
     pk->appendData(CMD_UPLOAD_FILE);
     pk->appendData(this->session);
     pk->appendData(filename);
+    pk->appendData(this->_file->get_Size_stdString());
 
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
 
@@ -322,7 +323,7 @@ Connection::send_Requset_Upload(std::string filepatch)
     if (pk->IsAvailableData())
         cmd = pk->getCMDHeader();
 
-    std::cout << "read CMD reponse login finished " << bytes << std::endl;
+    std::cout << "read CMD reponse upload finished " << bytes << std::endl;
 
     std::cout << "cmd respond: " << cmd << std::endl;
 
@@ -333,11 +334,8 @@ Connection::send_Requset_Upload(std::string filepatch)
             std::cout << "file url: " << this->_urlFileServer << std::endl;
         }
 
-        this->_file->format_FileName(filepatch);
-        //std::cout << filepatch << std::endl;
         //this->fsend(filepatch);
         this->send_File(filepatch);
-
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
@@ -466,6 +464,12 @@ Connection::send_File(std::string _filepatch){
     return true;
 }
 
+std::string
+Connection::get_Url_File_Server()
+{
+    return this->_urlFileServer;
+}
+
 bool
 Connection::send_CMD_MSG_FILE(std::string _sender, std::string _receiver)
 {
@@ -474,9 +478,10 @@ Connection::send_CMD_MSG_FILE(std::string _sender, std::string _receiver)
     pk = new Packet();
 
     pk->appendData(CMD_MSG_FILE);
-    pk->appendData(this->session);
+    //pk->appendData(this->session);
     pk->appendData(_sender);
     pk->appendData(_receiver);
+    pk->appendData(this->_urlFileServer);
     pk->appendData(this->_file->get_Size_stdString());
 
     SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());

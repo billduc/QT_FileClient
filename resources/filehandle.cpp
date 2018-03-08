@@ -56,8 +56,13 @@ FileHandle::close_Read_Stream(){
     this->_readStream.close();
 }
 
+std::string
+FileHandle::get_File_Patch(){
+    return this->_filePatch;
+}
+
 void
-FileHandle::format_FileName(std::string& filename)
+FileHandle::format_File_Patch(std::string& filename)
 {
     //check filepatch format QML
     //if (filename.find("file://")){
@@ -124,7 +129,7 @@ FileHandle::compute_Size()
     _myfile.seekg (0, std::ios::end);
     _end    = _myfile.tellg();
     _myfile.close();
-    this->_fileSize = _begin - _end;
+    this->_fileSize = _end - _begin;
 }
 
 std::string

@@ -103,7 +103,8 @@ Page {
                 //anchors.bottomMargin:   dp(10)
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    manageConnecion.sendRequestUpload(filepatch);
+                    //manageConnecion.sendRequestUpload(filepatch);
+                    manageConnecion.share_File(_userName, currentUser,filepatch);
                 }
 
             }

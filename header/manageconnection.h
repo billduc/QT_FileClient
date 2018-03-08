@@ -37,7 +37,6 @@ public slots:
     int                         file_connectToserver();
     bool                        sendRequestUpload(QString filepatch);
     bool                        share_File(QString sender, QString receiver, QString filepatch);
-
 };
 
 #endif // MANAGECONNECTION_H

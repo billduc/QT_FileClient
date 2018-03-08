@@ -13,8 +13,8 @@ public:
 
     bool                TCPconn(std::string host, int port);
     bool                TLSconn();
-    bool                ConnToServer(std::string host, int port);
-    bool                sendLoginRequest(std::string username, std::string password);
+    bool                conn_To_Server(std::string host, int port);
+    bool                send_Login_Request(std::string username, std::string password);
     bool                send_Requset_Upload(std::string filepatch);
     bool                share_File(std::string sender, std::string receiver, std::string filepatch);
     std::string         get_session() {return session;}
@@ -24,6 +24,7 @@ public:
 
     bool                fsend(std::string filepath);
     bool                send_File(std::string filepatch);
+    std::string         get_Url_File_Server();
 
 private:
     int                 socketfd;

@@ -149,9 +149,12 @@ Page {
             statusLogin.text = "cannot connect to server";
         }
 
-        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true)
+        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true){
             //container.state = qsTr("Master");
             container.state = qsTr("User");
+            _userName = txtUsername.text
+            _password = txtPassword.text
+        }
         else{
             console.log("login fail");
             statusLogin.text = "login fail";
