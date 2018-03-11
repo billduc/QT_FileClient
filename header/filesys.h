@@ -48,6 +48,9 @@
 #define MAXCONN                 1000
 #define	BUFFSIZE                4096	/* buffer size for reads and writes */
 
+#define PING                    111;
+#define PONG                    222;
+
 #define CMD_IS_MAIN_CONNECTION  88
 #define CMD_IS_FILE_CONNECTION  99
 #define CMD_CLASSIFY_DONE       89

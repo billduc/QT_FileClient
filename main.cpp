@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
     string md5code = md5("test");
     std::cout << md5code << std::endl;
 
-    //qmlRegisterType<UploadFile>("file", 1, 0, "UploadFile");
     qmlRegisterType<ManageConnection>("managerConnecion",1,0,"ManageConnection");
 
     // Use platform-specific fonts instead of V-Play's default font
