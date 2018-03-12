@@ -7,19 +7,19 @@ extern "C"
 }
 
 
-Connection::Connection(SSL_CTX * ctxp, int id) : Id(id)
+Connection::Connection(SSL_CTX * ctxp, int id) : _Id(id)
 {
-    this->ctx                   = ctxp;
-    this->timeout.tv_sec        = 5;
-    this->timeout.tv_usec       = 0;
-    this->is_mainConnecion      = false;
-    this->is_fileConnection     = false;
+    this->_ctx                   = ctxp;
+    this->_timeout.tv_sec        = 5;
+    this->_timeout.tv_usec       = 0;
+    this->_isMainConnection      = false;
+    this->_isFileConnection     = false;
     this->_file                 = new FileHandle();
 }
 
 Connection::~Connection(){
-    SSL_free(this->ssl);
-    close(this->socketfd);
+    SSL_free(this->_ssl);
+    close(this->_socketFd);
     delete this->_file;
 }
 
@@ -52,15 +52,15 @@ Connection::InitCTX(std::string fileCert)
 bool
 Connection::TCPconn(std::string ipAddr, int port)
 {
-    this->socketfd = socket(AF_INET, SOCK_STREAM, 0);
-    std::cout << "@connection log: fd " << this->socketfd << std::endl;
-    if (this->socketfd < 0){
+    this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
+    std::cout << "@connection log: fd " << this->_socketFd << std::endl;
+    if (this->_socketFd < 0){
         std::cerr <<"@connection log: ERROR create socket!!!" << std::endl;
         return false;
     }
 
     //set non-blocking model for socket
-    //this->setNonBlocking(this->socketfd);
+    //this->setNonBlocking(this->_socketFd);
 
     struct hostent *server;
     //struct addrinfo *iServer;
@@ -81,7 +81,7 @@ Connection::TCPconn(std::string ipAddr, int port)
 
     serv_addr.sin_port = htons(port);
 
-    if ( connect(this->socketfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
+    if ( connect(this->_socketFd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
         std::cerr << "@connection log: ERROR connectiong to server!!!" << std::endl;
         return -1;
     }
@@ -92,16 +92,16 @@ Connection::TCPconn(std::string ipAddr, int port)
 bool
 Connection::TLSconn()
 {
-    this->ssl = SSL_new(this->ctx);
+    this->_ssl = SSL_new(this->_ctx);
 
-    SSL_set_fd(this->ssl, this->socketfd);
+    SSL_set_fd(this->_ssl, this->_socketFd);
 
-    SSL_set_connect_state(this->ssl);
+    SSL_set_connect_state(this->_ssl);
 
-    if (SSL_connect(this->ssl) == -1 ){
+    if (SSL_connect(this->_ssl) == -1 ){
         std::cerr << "ERROR: ssl connection fail" << std::endl;
         int ret = 888;
-        SSL_get_error(this->ssl, ret);
+        SSL_get_error(this->_ssl, ret);
         switch (ret) {
             case SSL_ERROR_WANT_READ:
                 std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
@@ -127,7 +127,7 @@ Connection::TLSconn()
         return false;
     } else {
         std::cout << "Log: Establish TLS connection with server " << std::endl;
-        std::cout << "Log: Encryption: " << SSL_get_cipher(this->ssl) << std::endl;
+        std::cout << "Log: Encryption: " << SSL_get_cipher(this->_ssl) << std::endl;
         return true;
     }
 }
@@ -163,7 +163,7 @@ Connection::conn_To_Server(std::string host, int port)
         std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
         return false;
     }
-    std::cout <<"TLS connection established " << SSL_get_fd(this->ssl)  <<  std::endl;
+    std::cout <<"TLS connection established " << SSL_get_fd(this->_ssl)  <<  std::endl;
     return true;
 }
 
@@ -172,30 +172,30 @@ Connection::handle_Classify_Connection()
 {
     Packet *pk = new Packet();
 
-    if (is_mainConnecion)
+    if (this->_isMainConnection)
         pk->appendData(CMD_IS_MAIN_CONNECTION);
 
-    if (is_fileConnection)
+    if (this->_isFileConnection)
         pk->appendData(CMD_IS_FILE_CONNECTION);
 
-    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
+    SSL_write(this->_ssl,  &pk->getData()[0], pk->getData().size() );
     delete pk;
 
     int             rc;
     struct timeval  time;
 
-    FD_ZERO(&this->working_set);
-    FD_SET(this->socketfd, &this->working_set);
+    FD_ZERO(&this->_workingSet);
+    FD_SET(this->_socketFd, &this->_workingSet);
 
-    time    =   this->timeout;
-    rc      =   select(this->socketfd + 1, &this->working_set, NULL, NULL, &time);
+    time    =   this->_timeout;
+    rc      =   select(this->_socketFd + 1, &this->_workingSet, NULL, NULL, &time);
 
     if (rc == 0){
         std::cerr << "timeout classify connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    int bytes   = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+    int bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
     pk          = new Packet(std::string(this->buffer,bytes));
     int cmd     = pk->getCMDHeader();
 
@@ -215,61 +215,61 @@ Connection::handle_Classify_Connection()
 bool
 Connection::send_Login_Request(std::string username, std::string password)
 {
-    Packet*     pk;
+    Packet*     _pk;
     int         bytes, cmd;
     //send cmd to specify this connection is mainconnection
-    this->is_fileConnection = false;
-    this->is_mainConnecion  = true;
+    this->_isFileConnection     = false;
+    this->_isMainConnection     = true;
     this->handle_Classify_Connection();
 
     //send login request
-    pk = new Packet();
+    _pk = new Packet();
 
-    pk->appendData(CMD_AUTHEN_LOGIN);
-    pk->appendData(username);
-    pk->appendData(password);
+    _pk->appendData(CMD_AUTHEN_LOGIN);
+    _pk->appendData(username);
+    _pk->appendData(password);
 
     std::cout << "username: " << username << " passwork: " << password << std::endl;
-    std::cout << SSL_get_fd(this->ssl) << " send CMD request login "  << pk->getData().size() << " - " << pk->getData_stdString() << std::endl;
+    std::cout << SSL_get_fd(this->_ssl) << " send CMD request login "  << _pk->getData().size() << " - " << _pk->getData_stdString() << std::endl;
 
-    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size() );
+    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size() );
 
-    delete pk;
+    delete _pk;
 
     std::cout << "send CMD request login finished " << std::endl;
 
     //read data respond from server.
     bzero(this->buffer, sizeof(this->buffer));
-    struct timeval time = this->timeout;
+    struct timeval time = this->_timeout;
     fd_set fdset;
     FD_ZERO(&fdset);
-    FD_SET(this->socketfd, &fdset);
+    FD_SET(this->_socketFd, &fdset);
 
-    int rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
+    int rc = select(this->_socketFd+1, &fdset, NULL, NULL, &time);
 
     if (rc == 0){
         std::cerr << "timeout login request connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    bytes   = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
-    pk      = new Packet(std::string(buffer,bytes));
-    cmd     = pk->getCMDHeader();
+    bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
+    _pk      = new Packet(std::string(buffer,bytes));
+    cmd     = _pk->getCMDHeader();
 
     //std::cout << "read CMD reponse login finished " << bytes << std::endl;
 
     std::cout << "cmd respond: " << cmd << std::endl;
     if (cmd == CMD_AUTHEN_SUCCESS) {
         std::cout << "login success" << std::endl;
-        std::string sessionServerResponse = pk->getContent();
+        std::string sessionServerResponse = _pk->getContent();
         std::cout << "session: " << sessionServerResponse << std::endl;
-        this->session = sessionServerResponse;
+        this->_session = sessionServerResponse;
     } else {
         std::cout << "login fail" << std::endl;
         return false;
     }
 
-    delete pk;
+    delete _pk;
 
     return true;
 }
@@ -281,10 +281,10 @@ Connection::send_Requset_Upload(std::string filepatch)
     int         bytes;
     int         cmd;
     int         rc;
-    std::string filename    = this->_file->get_File_Name(filepatch);
+    std::string filename        = this->_file->get_File_Name(filepatch);
 
-    this->is_fileConnection = true;
-    this->is_mainConnecion  = false;
+    this->_isFileConnection     = true;
+    this->_isMainConnection     = false;
     this->handle_Classify_Connection();
     std::cout << "#log Connecion: before set file patch "<< filepatch << "inner class: " << this->_file->get_File_Patch() << std::endl;
     this->_file->format_File_Patch(filepatch);
@@ -293,32 +293,32 @@ Connection::send_Requset_Upload(std::string filepatch)
     //build and send login request CMD_UPLOAD_FILE
     pk = new Packet();
     pk->appendData(CMD_UPLOAD_FILE);
-    pk->appendData(this->session);
+    pk->appendData(this->_session);
     pk->appendData(filename);
     pk->appendData(this->_file->get_Size_stdString());
 
-    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+    SSL_write(this->_ssl,  &pk->getData()[0], pk->getData().size());
 
     delete pk;
 
     std::cout << "send CMD request upload finished" << std::endl;
 
     bzero(this->buffer, sizeof(this->buffer));
-    struct timeval time = this->timeout;
+    struct timeval time = this->_timeout;
     fd_set fdset;
     FD_ZERO(&fdset);
-    FD_SET(this->socketfd, &fdset);
+    FD_SET(this->_socketFd, &fdset);
 
-    rc = select(this->socketfd+1, &fdset, NULL, NULL, &time);
+    rc = select(this->_socketFd+1, &fdset, NULL, NULL, &time);
 
-    std::cerr << "log before select " << SSL_get_fd(this->ssl) << " " << rc << std::endl;
+    std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << rc << std::endl;
 
     if (rc == 0){
         std::cerr << "timeout login request connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    bytes   = SSL_read(this->ssl, this->buffer, sizeof(this->buffer));
+    bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
     pk      = new Packet(std::string(buffer,bytes));
     if (pk->IsAvailableData())
         cmd = pk->getCMDHeader();
@@ -346,10 +346,22 @@ Connection::send_Requset_Upload(std::string filepatch)
 
 bool
 Connection::share_File(std::string _sender, std::string _receiver, std::string _filepatch){
-    this->send_Requset_Upload(_filepatch);
-    this->send_CMD_MSG_FILE(_sender, _receiver);
+    if (this->send_Requset_Upload(_filepatch)){
+        std::cout << "send file to server done";
+        this->send_CMD_UPLOAD_FINISH();
+        if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
+            std::cout << "server save file finish. this connectin can be close" << std::endl;
+            return true;
+        } else {
+            std::cerr << "some this wrong when save file to server!!! check again" << std::endl;
+            return false;
+        }
+    }
+    else{
+        std::cerr << "some this wrong when send file to server! check again" << std::endl;
+        return false;
+    }
 }
-
 
 bool Connection::fsend(std::string filepath)
 {
@@ -369,11 +381,11 @@ bool Connection::fsend(std::string filepath)
     ifFile.seekg (0, ifFile.beg);
     for(int i = 0; i < total_chunks; ++i){
         ifFile.read(this->buffer, sizeof(this->buffer));
-        int si = SSL_write(this->ssl, this->buffer, sizeof(this->buffer));
+        int si = SSL_write(this->_ssl, this->buffer, sizeof(this->buffer));
         if (si < 0){
             std::cerr << " ssl wirte data error !!!! " << si << std::endl;
             int ret = 333;
-            SSL_get_error(this->ssl,ret);
+            SSL_get_error(this->_ssl,ret);
             switch ( ret) {
                 case SSL_ERROR_WANT_READ:
                     std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
@@ -409,7 +421,7 @@ bool Connection::fsend(std::string filepath)
 
     if (size_last_chunk > 0){
         ifFile.read(this->buffer, size_last_chunk);
-        int si = SSL_write(this->ssl, this->buffer, size_last_chunk);
+        int si = SSL_write(this->_ssl, this->buffer, size_last_chunk);
         if (si < 0)
             std::cerr <<" ssl wirte data error !!!!" << std::endl;
         else{
@@ -420,7 +432,7 @@ bool Connection::fsend(std::string filepath)
     }
 
     std::cout << "data sended: " << dataSend  << " of  Datasize: " << fileSize << std::endl;
-    ///close(SSL_get_fd(this->ssl));
+    ///close(SSL_get_fd(this->_ssl));
     return true;
 }
 
@@ -444,7 +456,7 @@ Connection::send_File(std::string _filepatch){
     rep(i,_totalChunks){
         bzero(this->buffer, BUFFSIZE);
         this->_file->read_File_Block(this->buffer, BUFFSIZE);
-        int si = SSL_write(this->ssl, this->buffer, BUFFSIZE);
+        int si = SSL_write(this->_ssl, this->buffer, BUFFSIZE);
         _dataSend += si;
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(this->buffer) << std::endl;
         ++_count;
@@ -453,7 +465,7 @@ Connection::send_File(std::string _filepatch){
     if (_sizeLastChunk > 0){
         bzero(this->buffer, BUFFSIZE);
         this->_file->read_File_Block(this->buffer, _sizeLastChunk);
-        int si = SSL_write(this->ssl, this->buffer, _sizeLastChunk);
+        int si = SSL_write(this->_ssl, this->buffer, _sizeLastChunk);
         _dataSend += si;
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << _sizeLastChunk << std::endl;
         ++_count;
@@ -461,6 +473,7 @@ Connection::send_File(std::string _filepatch){
 
     std::cout << "data sended: " << _dataSend  << " of  Datasize: " << _size << std::endl;
     this->_file->close_Read_Stream();
+
     return true;
 }
 
@@ -473,19 +486,80 @@ Connection::get_Url_File_Server()
 bool
 Connection::send_CMD_MSG_FILE(std::string _sender, std::string _receiver)
 {
-    Packet*     pk;
+    Packet*     _pk;
     //send CMD_MSG_FILE
-    pk = new Packet();
+    _pk = new Packet();
 
-    pk->appendData(CMD_MSG_FILE);
-    //pk->appendData(this->session);
-    pk->appendData(_sender);
-    pk->appendData(_receiver);
-    pk->appendData(this->_urlFileServer);
-    pk->appendData(this->_file->get_Size_stdString());
+    _pk->appendData(CMD_MSG_FILE);
+    //pk->appendData(this->_session);
+    _pk->appendData(_sender);
+    _pk->appendData(_receiver);
+    _pk->appendData(this->_urlFileServer);
+    _pk->appendData(this->_file->get_Size_stdString());
 
-    SSL_write(this->ssl,  &pk->getData()[0], pk->getData().size());
+    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
+    delete _pk;
+    return true;
 }
+
+int
+Connection::get_CMD_HEADER()
+{
+    Packet*         _pk;
+    int             _num_Fd_Incomming, _bytes, _cmd;
+    struct timeval  _time = this->_timeout;
+    fd_set          _fdset;
+
+    FD_ZERO(&_fdset);
+    FD_SET(this->_socketFd, &_fdset);
+
+    _num_Fd_Incomming = select(this->_socketFd+1, &_fdset, NULL, NULL, &_time);
+
+    std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << _num_Fd_Incomming << std::endl;
+
+    if (_num_Fd_Incomming == 0){
+        std::cerr << "timeout login request connection!!!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    bzero(this->buffer, sizeof(this->buffer));
+
+    _bytes   = SSL_read(this->_ssl, this->buffer, 4);
+    _pk      = new Packet(std::string(this->buffer,_bytes));
+    std::cout << "Log Connection: size read header " << _bytes << std::endl;
+    if (_pk->IsAvailableData())
+        _cmd = _pk->getCMDHeader();
+
+    delete _pk;
+    return _cmd;
+}
+
+
+
+bool
+Connection::send_CMD_UPLOAD_FINISH()
+{
+    //send CMD_UPLOAD_FINISH
+    Packet*     _pk;
+    _pk = new Packet();
+
+    _pk->appendData(CMD_UPLOAD_FINISH);
+
+    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
+    delete _pk;
+    return true;
+}
+
+bool
+Connection::check_Respond_CMD_SAVE_FILE_FINISH()
+{
+    int _cmd = this->get_CMD_HEADER();
+    if (_cmd == CMD_SAVE_FILE_FINISH)
+        return true;
+    else
+        return false;
+}
+
 
 
 

@@ -8,20 +8,20 @@ extern "C"
 
 ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 {
-    this->ctx       = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
-    this->hostname  = "localhost";
-    this->port      = 443;
+    this->_ctx       = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->_hostName  = "localhost";
+    this->_port      = 443;
 }
 
 ManageConnection::~ManageConnection()
 {
 
-    delete this->mainConnection;
-    rep(i,this->listConnnection.size()){
-        delete this->listConnnection.at(i);
+    delete this->_mainConnection;
+    rep(i,this->_listFileConnections.size()){
+        delete this->_listFileConnections.at(i);
     }
-    listConnnection.clear();
-    SSL_CTX_free(this->ctx);
+    _listFileConnections.clear();
+    SSL_CTX_free(this->_ctx);
 }
 
 SSL_CTX*
@@ -70,26 +70,26 @@ ManageConnection::setNonBlocking(int &sock)
 }
 
 bool
-ManageConnection::main_connectToServer(QString host, int port)
+ManageConnection::main_connectToServer(QString host, int _port)
 {
-    this->mainConnection = new Connection(this->ctx);
-    return this->mainConnection->conn_To_Server(this->hostname.toStdString(), this->port);
+    this->_mainConnection = new Connection(this->_ctx);
+    return this->_mainConnection->conn_To_Server(this->_hostName.toStdString(), this->_port);
 }
 
 bool
-ManageConnection::authenConnection(QString username, QString password)
+ManageConnection::auth_Connection(QString username, QString password)
 {
     //this->main_connectToServer();
-    return this->mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
+    return this->_mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
 }
 
 int
 ManageConnection::file_connectToserver()
 {
-    Connection * conn = new Connection(this->ctx, listConnnection.size());
-    if (conn->conn_To_Server(this->hostname.toStdString(), this->port)){
-        conn->set_session(this->mainConnection->get_session());
-        listConnnection.pb(conn);
+    Connection * conn = new Connection(this->_ctx, _listFileConnections.size());
+    if (conn->conn_To_Server(this->_hostName.toStdString(), this->_port)){
+        conn->set_session(this->_mainConnection->get_session());
+        _listFileConnections.pb(conn);
         return conn->get_Id();
     } else {
         delete conn;
@@ -110,10 +110,10 @@ ManageConnection::sendRequestUpload(QString filepatch)
         std::cout <<"Log managerConnection: create file connecion success" << std::endl;
     }
 
-    this->listConnnection.at(id)->send_Requset_Upload(filepatch.toStdString());
+    this->_listFileConnections.at(id)->send_Requset_Upload(filepatch.toStdString());
 
-    delete this->listConnnection.at(id);
-    this->listConnnection.erase(this->listConnnection.begin()+id);
+    delete this->_listFileConnections.at(id);
+    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
 }
 
 bool
@@ -129,34 +129,34 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
         std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
     }
 
-    //this->listConnnection.at(id)->sendRequsetUpload(filepatch.toStdString());
-    this->listConnnection.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
-    delete this->listConnnection.at(id);
-    this->listConnnection.erase(this->listConnnection.begin()+id);
+    //this->_listFileConnections.at(id)->sendRequsetUpload(filepatch.toStdString());
+    this->_listFileConnections.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
+    delete this->_listFileConnections.at(id);
+    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
 }
 
 QString
 ManageConnection::get_Hostname()
 {
-    return this->hostname;
+    return this->_hostName;
 }
 
 void
-ManageConnection::set_Hostname(QString hostname)
+ManageConnection::set_Hostname(QString _hostName)
 {
-    this->hostname = hostname;
+    this->_hostName = _hostName;
 }
 
 int
 ManageConnection::get_Port()
 {
-    return this->port;
+    return this->_port;
 }
 
 void
-ManageConnection::set_Port(int port)
+ManageConnection::set_Port(int _port)
 {
-    this->port = port;
+    this->_port = _port;
 }
 
 

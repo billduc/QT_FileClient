@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     resources/manageconnection.cpp \
     resources/md5.cpp \
     resources/packet.cpp \
-    resources/uploadfile.cpp
+    resources/uploadfile.cpp \
+    resources/database.cpp
 
 
 android {
@@ -59,7 +60,8 @@ HEADERS += \
     header/manageconnection.h \
     header/md5.h \
     header/packet.h \
-    header/uploadfile.h
+    header/uploadfile.h \
+    header/database.h
 
 DISTFILES += \
     qml/login.qml \

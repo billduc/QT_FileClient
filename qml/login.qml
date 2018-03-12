@@ -140,16 +140,17 @@ Page {
     }
 
     function loginManual(){
-        //Boolean check = manageConnecion.authenConnection(txtUsername.text,txtPassword.text);
+        //Boolean check = manageConnecion.auth_Connection(txtUsername.text,txtPassword.text);
 
-        if (manageConnecion.main_connectToServer("localhost","443") )
+        if (manageConnecion.main_connectToServer("localhost","443.") )
             console.log("connection success");
         else{
             console.log("conneciton fail");
             statusLogin.text = "cannot connect to server";
+            return
         }
 
-        if ( manageConnecion.authenConnection(txtUsername.text,txtPassword.text) == true){
+        if ( manageConnecion.auth_Connection(txtUsername.text,txtPassword.text) == true){
             //container.state = qsTr("Master");
             container.state = qsTr("User");
             _userName = txtUsername.text

@@ -20,12 +20,12 @@ public:
 
 private:
 
-    Connection*                 mainConnection;
-    std::vector<Connection*>    listConnnection;
-    SSL_CTX*                    ctx;
-    QString                     hostname;
-    int                         port;
-    std::string                 session;
+    Connection*                 _mainConnection;
+    std::vector<Connection*>    _listFileConnections;
+    SSL_CTX*                    _ctx;
+    QString                     _hostName;
+    int                         _port;
+    std::string                 _session;
     SSL_CTX*                    InitCTX(std::string fileCert);
     void                        setNonBlocking(int &sock);
 
@@ -33,7 +33,9 @@ signals:
 
 public slots:
     bool                        main_connectToServer(QString host, int port);
-    bool                        authenConnection(QString username, QString password);
+    bool                        auth_Connection(QString username, QString password);
+
+    //these APIs for file connection
     int                         file_connectToserver();
     bool                        sendRequestUpload(QString filepatch);
     bool                        share_File(QString sender, QString receiver, QString filepatch);
