@@ -31,7 +31,13 @@ SOURCES += main.cpp \
     resources/md5.cpp \
     resources/packet.cpp \
     resources/uploadfile.cpp \
-    resources/database.cpp
+    resources/database.cpp \
+    resources/connection_mainconn.cpp \
+    resources/connection_fileconn.cpp \
+    resources/connection_craft.cpp \
+    resources/manager_mainconnection.cpp \
+    resources/manager_fileconnection.cpp \
+    resources/manager_craft.cpp
 
 
 android {

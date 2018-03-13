@@ -8,19 +8,27 @@ extern "C"
 
 ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
 {
-    this->_ctx       = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
-    this->_hostName  = "localhost";
-    this->_port      = 443;
+    this->_ctx                      = this->InitCTX("/media/veracrypt1/projects/QT_FileClient/CA/ca.crt.pem");
+    this->_hostName                 = "localhost";
+    this->_port                     = 443;
+    this->_stopThreadMainConn       = false;
+    this->_timeoutClient.tv_sec     = 3;
+    this->_timeoutClient.tv_usec    = 0;
 }
 
 ManageConnection::~ManageConnection()
 {
-
+    //cancle thread
+    this->_stopThreadMainConn = true;
+    if (this->_threadMainConn->joinable())
+        this->_threadMainConn->join();
+    //clear memory
     delete this->_mainConnection;
     rep(i,this->_listFileConnections.size()){
         delete this->_listFileConnections.at(i);
     }
     _listFileConnections.clear();
+
     SSL_CTX_free(this->_ctx);
 }
 
@@ -69,71 +77,7 @@ ManageConnection::setNonBlocking(int &sock)
     }
 }
 
-bool
-ManageConnection::main_connectToServer(QString host, int _port)
-{
-    this->_mainConnection = new Connection(this->_ctx);
-    return this->_mainConnection->conn_To_Server(this->_hostName.toStdString(), this->_port);
-}
 
-bool
-ManageConnection::auth_Connection(QString username, QString password)
-{
-    //this->main_connectToServer();
-    return this->_mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
-}
-
-int
-ManageConnection::file_connectToserver()
-{
-    Connection * conn = new Connection(this->_ctx, _listFileConnections.size());
-    if (conn->conn_To_Server(this->_hostName.toStdString(), this->_port)){
-        conn->set_session(this->_mainConnection->get_session());
-        _listFileConnections.pb(conn);
-        return conn->get_Id();
-    } else {
-        delete conn;
-        return -1;
-    }
-}
-
-bool
-ManageConnection::sendRequestUpload(QString filepatch)
-{
-    int id = this->file_connectToserver();
-
-    if (id == -1){
-        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
-        return false;
-    }
-    else{
-        std::cout <<"Log managerConnection: create file connecion success" << std::endl;
-    }
-
-    this->_listFileConnections.at(id)->send_Requset_Upload(filepatch.toStdString());
-
-    delete this->_listFileConnections.at(id);
-    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
-}
-
-bool
-ManageConnection::share_File(QString sender, QString receiver, QString filepatch)
-{
-    int id = this->file_connectToserver();
-
-    if (id == -1){
-        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
-        return false;
-    }
-    else{
-        std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
-    }
-
-    //this->_listFileConnections.at(id)->sendRequsetUpload(filepatch.toStdString());
-    this->_listFileConnections.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
-    delete this->_listFileConnections.at(id);
-    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
-}
 
 QString
 ManageConnection::get_Hostname()
