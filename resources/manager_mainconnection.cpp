@@ -24,16 +24,20 @@ ManageConnection::thread_Handle_Main_Connection_Keepalive()
         _time       = this->_timeoutClient;
         FD_ZERO(&_mainSet);
         FD_SET(_socketFd,&_mainSet);
-        this->_mainConnection->send_PING();
-
         for(;;){
-            _rc = select(_socketFd+1, &_mainSet, NULL, NULL, &_time );
+            _rc = select(_socketFd+1, NULL, &_mainSet, NULL, &_time );
             if (_rc > 0){
-                _cmd = this->_mainConnection->get_CMD_HEADER();
-
+                this->_mainConnection->send_PING();
+                sleep(1);
             }
         }
     }
+}
+
+void
+ManageConnection::thread_Handle_Main_Connection_Receive_CMD()
+{
+
 }
 
 bool

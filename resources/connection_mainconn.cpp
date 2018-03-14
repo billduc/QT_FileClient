@@ -6,6 +6,7 @@ Connection::send_Login_Request(std::string _username, std::string _password)
     Packet*         _pk;
     int             bytes, cmd;
     std::string     _sessionServerResponse;
+    char            _buffer[BUFFSIZE];
     //send cmd to specify this connection is mainconnection
     this->_isFileConnection     = false;
     this->_isMainConnection     = true;
@@ -28,7 +29,7 @@ Connection::send_Login_Request(std::string _username, std::string _password)
     std::cout << "send CMD request login finished " << std::endl;
 
     //read data respond from server.
-    bzero(this->buffer, sizeof(this->buffer));
+    bzero(_buffer, sizeof(_buffer));
     struct timeval time = this->_timeout;
     fd_set fdset;
     FD_ZERO(&fdset);
@@ -41,8 +42,8 @@ Connection::send_Login_Request(std::string _username, std::string _password)
         exit(EXIT_FAILURE);
     }
 
-    bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
-    _pk     = new Packet(std::string(buffer,bytes));
+    bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+    _pk     = new Packet(std::string(_buffer,bytes));
     if (_pk->IsAvailableData())
         cmd = _pk->getCMDHeader();
 

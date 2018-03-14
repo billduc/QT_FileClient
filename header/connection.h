@@ -73,6 +73,7 @@ private:
     //these APIs for file connection
     bool                send_CMD_UPLOAD_FINISH();
     bool                check_Respond_CMD_SAVE_FILE_FINISH();
+    bool                check_Respond_CMD_DOWNLOAD_FINISH();
 };
 
 #endif // CONNECTION_H

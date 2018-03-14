@@ -181,48 +181,51 @@ Connection::send_CMD_HEADER(int _CMD)
     return;
 }
 
+/*
+ *@DONE
+ */
 bool
 Connection::handle_Classify_Connection()
 {
-    Packet *pk = new Packet();
+    Packet              *_pk = new Packet();
+    char                _buffer[BUFFSIZE];
+    int                 _rc, _bytes, _cmd;
+    struct timeval      _time;
 
     if (this->_isMainConnection)
-        pk->appendData(CMD_IS_MAIN_CONNECTION);
+        _pk->appendData(CMD_IS_MAIN_CONNECTION);
 
     if (this->_isFileConnection)
-        pk->appendData(CMD_IS_FILE_CONNECTION);
+        _pk->appendData(CMD_IS_FILE_CONNECTION);
 
-    SSL_write(this->_ssl,  &pk->getData()[0], pk->getData().size() );
-    delete pk;
-
-    int             rc;
-    struct timeval  time;
+    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size() );
+    delete _pk;
 
     FD_ZERO(&this->_workingSet);
     FD_SET(this->_socketFd, &this->_workingSet);
 
-    time    =   this->_timeout;
-    rc      =   select(this->_socketFd + 1, &this->_workingSet, NULL, NULL, &time);
+    _time    =   this->_timeout;
+    _rc      =   select(this->_socketFd + 1, &this->_workingSet, NULL, NULL, &_time);
 
-    if (rc == 0){
+    if (_rc == 0){
         std::cerr << "timeout classify connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    int bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
-    pk          = new Packet(std::string(this->buffer,bytes));
-    int cmd     = pk->getCMDHeader();
+    _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+    _pk      = new Packet(std::string(_buffer,_bytes));
+    _cmd     = _pk->getCMDHeader();
 
-    std::cout << "cmd respond: " << cmd << std::endl;
+    std::cout << "cmd respond: " << _cmd << std::endl;
 
-    if (cmd == CMD_CLASSIFY_DONE){
+    if (_cmd == CMD_CLASSIFY_DONE){
         std::cout << "classify connection done." << std::endl;
     } else {
         std::cerr << "fail classify conneciton!!! exit." << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    delete pk;
+    delete _pk;
     return true;
 }
 
@@ -258,24 +261,25 @@ Connection::get_CMD_HEADER()
     int             _num_Fd_Incomming, _bytes, _cmd;
     struct timeval  _time = this->_timeout;
     fd_set          _fdset;
+    char            _buffer[8];
 
     FD_ZERO(&_fdset);
     FD_SET(this->_socketFd, &_fdset);
 
     _num_Fd_Incomming = select(this->_socketFd+1, &_fdset, NULL, NULL, &_time);
 
-    std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << _num_Fd_Incomming << std::endl;
+    //std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << _num_Fd_Incomming << std::endl;
 
-    if (_num_Fd_Incomming == 0){
+    if (_num_Fd_Incomming <= 0){
         std::cerr << "timeout!!!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    bzero(this->buffer, sizeof(this->buffer));
+    bzero(_buffer, sizeof(_buffer));
 
-    _bytes   = SSL_read(this->_ssl, this->buffer, 4);
-    _pk      = new Packet(std::string(this->buffer,_bytes));
-    std::cout << "Log Connection: size read header " << _bytes << std::endl;
+    _bytes   = SSL_read(this->_ssl, _buffer, 4);
+    _pk      = new Packet(std::string(_buffer,_bytes));
+    //std::cout << "Log Connection: size read header " << _bytes << std::endl;
     if (_pk->IsAvailableData())
         _cmd = _pk->getCMDHeader();
 

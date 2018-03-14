@@ -116,42 +116,43 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
     _recievedData       = 0;
 
     while(1){
-         std::cout << "#log conn: Write file " << _recievedData << " " << _totalData<< std::endl;
-    if (_totalData == _recievedData){
-       this->_dataWriteDoneState = true;
-       return;
-    }
-    else {
-       if (_recievedData + sizeof(_buffer) <= _totalData)
-       {
-           _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
-           if (_bytes > 0){
-               _data = std::string(_buffer, _bytes);
-               std::cout << "#log conn: Write block" << std::endl;
-               // Previous (upload) command continuation, store incoming data to the file
-               std::cout << "#log conn: Part" << ++(this->_receivedPart) << ": " << _bytes << std::endl;
-               this->_file->write_File_Block(_data);
-           } else {
-               //this->_closureRequested = true;
-               std::cerr << "#log conn: 1 read zero data" << std::endl;
-           }
-       } else {
-           if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
-               {
-                   _bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
-                   if (_bytes > 0){
-                       _data = std::string(_buffer, _bytes);
-                       std::cout << "#log conn: Write block" << std::endl;
-                       // Previous (upload) command continuation, store incoming data to the file
-                       std::cout << "#log conn: Part" << ++(this->_receivedPart) << ": " << _bytes << std::endl;
-                       this->_file->write_File_Block(_data);
-                   } else {
-                       //this->_closureRequested = true;
-                       std::cerr << "#log conn: 2 read zero data" << std::endl;
-                   }
-               }
-       }
-    }
+        std::cout << "#log conn: Write file " << _recievedData << " " << _totalData<< std::endl;
+        if (_totalData == _recievedData){
+            this->_dataWriteDoneState = true;
+            return;
+        } else {
+            if (_recievedData + sizeof(_buffer) <= _totalData)
+            {
+                _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+                if (_bytes > 0){
+                    _data = std::string(_buffer, _bytes);
+                    std::cout << "#log conn: Write block" << std::endl;
+                    // Previous (upload) command continuation, store incoming data to the file
+                    std::cout << "#log conn: Part " << ++(this->_receivedPart) << ": " << _bytes << std::endl;
+                    this->_file->write_File_Block(_data);
+                    _recievedData += _bytes;
+                } else {
+                    //this->_closureRequested = true;
+                    std::cerr << "#log conn: 1 read zero data" << std::endl;
+                }
+            } else {
+                if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
+                    {
+                        _bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
+                        _recievedData += _bytes;
+                        if (_bytes > 0){
+                            _data = std::string(_buffer, _bytes);
+                            std::cout << "#log conn: Write block" << std::endl;
+                            // Previous (upload) command continuation, store incoming data to the file
+                            std::cout << "#log conn: Part" << ++(this->_receivedPart) << ": " << _bytes << std::endl;
+                            this->_file->write_File_Block(_data);
+                        } else {
+                            //this->_closureRequested = true;
+                            std::cerr << "#log conn: 2 read zero data" << std::endl;
+                        }
+                    }
+            }
+        }
     }
 }
 
@@ -179,9 +180,8 @@ bool
 Connection::receive_File(std::string _fileURL, long long _fileSize)
 {
     if (this->send_Requset_Download(_fileURL, _fileSize)){
-        std::cout << "recieved file from server";
-        this->send_CMD_UPLOAD_FINISH();
-        if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
+        std::cout << "recieved file from server" << std::endl;;
+        if (this->check_Respond_CMD_DOWNLOAD_FINISH()){
             std::cout << "server save file finish. this connectin can be close"     << std::endl;
             return true;
         } else {
@@ -248,6 +248,17 @@ Connection::send_CMD_UPLOAD_FINISH()
     SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
     delete _pk;
     return true;
+}
+
+bool
+Connection::check_Respond_CMD_DOWNLOAD_FINISH()
+{
+    std::cout << "Log Connection: check_Respond_CMD_SAVE_FILE_FINISH" << std::endl;
+    int _cmd = this->get_CMD_HEADER();
+    if (_cmd == CMD_DOWNLOAD_FINISH)
+        return true;
+    else
+        return false;
 }
 
 bool

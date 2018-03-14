@@ -35,6 +35,7 @@ private:
 
     void                            setNonBlocking(int &sock);
     void                            thread_Handle_Main_Connection_Keepalive();
+    void                            thread_Handle_Main_Connection_Receive_CMD();
     void                            wait_Auth_Main_Connection();
     //void                          handle_CMD_
 signals:
