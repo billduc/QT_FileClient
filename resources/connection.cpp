@@ -12,10 +12,12 @@ Connection::Connection(SSL_CTX * ctxp, int id) : _Id(id)
     this->_ctx                      = ctxp;
     this->_timeout.tv_sec           = 5;
     this->_timeout.tv_usec          = 0;
+    this->_receivedPart             = 0;
     this->_isMainConnection         = false;
     this->_isFileConnection         = false;
     this->_statusLoginSuccess       = false;
     this->_statusSendFileFinished   = false;
+    this->_dataWriteDoneState       = false;
     this->_file                     = new FileHandle();
 }
 
@@ -169,6 +171,16 @@ Connection::conn_To_Server(std::string host, int port)
     return true;
 }
 
+void
+Connection::send_CMD_HEADER(int _CMD)
+{
+    Packet *_pk = new Packet();
+    _pk->appendData(_CMD);
+    SSL_write(this->_ssl, &_pk->getData()[0], _pk->getData().size() );
+    delete _pk;
+    return;
+}
+
 bool
 Connection::handle_Classify_Connection()
 {
@@ -255,7 +267,7 @@ Connection::get_CMD_HEADER()
     std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << _num_Fd_Incomming << std::endl;
 
     if (_num_Fd_Incomming == 0){
-        std::cerr << "timeout login request connection!!!" << std::endl;
+        std::cerr << "timeout!!!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 

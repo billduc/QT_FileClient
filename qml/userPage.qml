@@ -4,7 +4,6 @@ import QtQuick 2.0
 Page {
     id: userPage
     title: "Users"
-    //Component { id:
     AppListView {
         id: listUsers
         delegate: SimpleRow {
@@ -16,7 +15,7 @@ Page {
         }
         model: [
           { text: "user2",
-            icon: IconType.user },
+            icon: IconType.user},
           { text: "user3",
             icon: IconType.user },
           { text: "user4",

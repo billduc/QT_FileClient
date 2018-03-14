@@ -14,6 +14,9 @@ ManageConnection::ManageConnection(QObject *parent) : QObject(parent)
     this->_stopThreadMainConn       = false;
     this->_timeoutClient.tv_sec     = 3;
     this->_timeoutClient.tv_usec    = 0;
+
+    this->_listFileConnections.clear();
+    this->_ListFileTransactions.clear();
 }
 
 ManageConnection::~ManageConnection()
@@ -76,7 +79,6 @@ ManageConnection::setNonBlocking(int &sock)
         return;
     }
 }
-
 
 
 QString

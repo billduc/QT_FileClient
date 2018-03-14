@@ -11,7 +11,7 @@ ManageConnection::wait_Auth_Main_Connection()
 }
 
 void
-ManageConnection::thread_Handle_Main_Connection()
+ManageConnection::thread_Handle_Main_Connection_Keepalive()
 {
     struct timeval  _time;
     fd_set          _mainSet;
@@ -49,8 +49,12 @@ ManageConnection::auth_Connection(QString username, QString password)
     //this->main_connectToServer();
     this->_mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
     if (this->_mainConnection->get_Status_Login_Success()){
-        this->_threadMainConn = new std::thread(&ManageConnection::thread_Handle_Main_Connection, this);
+        std::cout << "check log thread " << std::endl;
+        this->_threadMainConn = new std::thread(&ManageConnection::thread_Handle_Main_Connection_Keepalive, this);
+        std::cout << "check log thread 2" << std::endl;
         return true;
+    } else {
+        delete this->_mainConnection;
+        return false;
     }
-    return false;
 }

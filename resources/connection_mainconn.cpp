@@ -1,10 +1,11 @@
 #include "../header/connection.h"
 
 bool
-Connection::send_Login_Request(std::string username, std::string password)
+Connection::send_Login_Request(std::string _username, std::string _password)
 {
-    Packet*     _pk;
-    int         bytes, cmd;
+    Packet*         _pk;
+    int             bytes, cmd;
+    std::string     _sessionServerResponse;
     //send cmd to specify this connection is mainconnection
     this->_isFileConnection     = false;
     this->_isMainConnection     = true;
@@ -14,10 +15,10 @@ Connection::send_Login_Request(std::string username, std::string password)
     _pk = new Packet();
 
     _pk->appendData(CMD_AUTHEN_LOGIN);
-    _pk->appendData(username);
-    _pk->appendData(password);
+    _pk->appendData(_username);
+    _pk->appendData(_password);
 
-    std::cout << "username: " << username << " passwork: " << password << std::endl;
+    std::cout << "username: " << _username << " passwork: " << _password << std::endl;
     std::cout << SSL_get_fd(this->_ssl) << " send CMD request login "  << _pk->getData().size() << " - " << _pk->getData_stdString() << std::endl;
 
     SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size() );
@@ -35,32 +36,33 @@ Connection::send_Login_Request(std::string username, std::string password)
 
     int rc = select(this->_socketFd+1, &fdset, NULL, NULL, &time);
 
-    if (rc == 0){
-        std::cerr << "timeout login request connection!!!" << std::endl;
+    if (rc <= 0){
+        std::cerr << "timeout/error send login request connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     bytes   = SSL_read(this->_ssl, this->buffer, sizeof(this->buffer));
     _pk     = new Packet(std::string(buffer,bytes));
-    cmd     = _pk->getCMDHeader();
+    if (_pk->IsAvailableData())
+        cmd = _pk->getCMDHeader();
 
-    //std::cout << "read CMD reponse login finished " << bytes << std::endl;
+    std::cout << "read CMD reponse login finished " << bytes << std::endl;
 
     std::cout << "cmd respond: " << cmd << std::endl;
     if (cmd == CMD_AUTHEN_SUCCESS) {
         std::cout << "login success" << std::endl;
-        std::string _sessionServerResponse = _pk->getContent();
+        if (_pk->IsAvailableData())
+            _sessionServerResponse = _pk->getContent();
         std::cout << "session: " << _sessionServerResponse << std::endl;
         this->_session = _sessionServerResponse;
         this->set_Status_Login_Success(true);
     } else {
         std::cout << "login fail" << std::endl;
-        return false;
     }
 
     delete _pk;
 
-    return true;
+    return this->_statusLoginSuccess;
 }
 
 void

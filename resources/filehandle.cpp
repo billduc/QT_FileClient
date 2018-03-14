@@ -99,6 +99,29 @@ FileHandle::read_File_Block(char* buffer, int sizeblock)
     this->_readStream.read(buffer, sizeblock);
 }
 
+
+int
+FileHandle::write_File_Block(std::string content) {
+    if(!this->_writeStream) {
+        std::cerr << "Cannot write to output file" << std::endl;
+        return (EXIT_FAILURE);
+    }
+    std::cout << "$Log FileHandle: Appending to file" << std::endl;
+    //this->_dataReceived += content.length();
+    (this->_writeStream) << content;
+    return (EXIT_SUCCESS);
+}
+
+int
+FileHandle::begin_Write_File(std::string _fileName) {
+    this->_writeStream.open(_fileName.c_str(), std::ios::out|std::ios::binary); // output file
+    if(!this->_writeStream) {
+        std::cerr << "$Log FileHandle: Cannot open output file '" << _fileName << "'" << std::endl;
+        return (EXIT_FAILURE);
+    }
+    std::cout << "$Log FileHandle: Beginning writing to file '" << _fileName << "'" << std::endl;
+    return (EXIT_SUCCESS);
+}
 /*
  *get size from of file
  */

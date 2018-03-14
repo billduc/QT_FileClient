@@ -37,14 +37,6 @@ Page {
             property real rowSpacingSize: Qt.platform.os === "ios"?dp(15):dp(10)
 
             Item {
-                id:         itemStatus
-                Text {
-                    id:     statusLogin
-                    text:   qsTr("");
-                }
-            }
-
-            Item {
                 id:                     itemUsername
                 Layout.preferredWidth:  content.itemSize
                 height:                 txtUsername.implicitHeight
@@ -123,6 +115,17 @@ Page {
                     }
                 }
             }
+
+            Item {
+                id:                     itemStatus
+                anchors.topMargin:      dp(10)
+                anchors.top:            itemLogin.bottom
+                Text {
+                    id:                 statusLogin
+                    text:               qsTr("");
+                    color:              "red"
+                }
+            }
         }
         Keys.onReturnPressed: {
             if(txtUsername.text != "" && txtPassword.text != "")
@@ -158,7 +161,7 @@ Page {
         }
         else{
             console.log("login fail");
-            statusLogin.text = "login fail";
+            statusLogin.text = "Invalid username or password.";
         }
     }
 

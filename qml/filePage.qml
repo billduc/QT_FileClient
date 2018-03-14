@@ -111,32 +111,6 @@ Page {
 
         }
         model: fileModel
-
-        /*
-        delegate: SwipeOptionsContainer {
-            id: containerf
-
-            rightOption: AppButton {
-                text: qsTr("upload")
-
-                onClicked: {
-                    //uploadfile.upFile(filepatch);
-                    manageConnecion.sendRequestUpload(filepatch);
-                    container.hideOptions()
-
-                    // Remove selected item and notify listview model
-                    //masterPage.model.splice(index, 1)
-                    //masterPage.modelChanged()
-                }
-            }
-
-            SimpleRow {
-                onSelected: {
-                    masterPage.navigationStack.popAllExceptFirstAndPush(Qt.resolvedUrl("DetailPage.qml"), { content: item.text })
-                }
-            }
-        }
-        */
     }
 
     Rectangle {

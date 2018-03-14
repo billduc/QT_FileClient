@@ -10,10 +10,13 @@ public:
     FileHandle(std::string patch);
     ~FileHandle();
 
-    bool            open_File_To_Read(std::string fileName);
+    int             write_File_Block(std::string _content);
+    int             begin_Write_File(std::string _fileName);
+
+    bool            open_File_To_Read(std::string _fileName);
     bool            open_File_To_Read();
     void            close_Read_Stream();
-    void            read_File_Block(char* buffer, int sizeblock);
+    void            read_File_Block(char* _buffer, int _sizeblock);
     std::string     get_File_Name(std::string);
     void            format_File_Patch(std::string&);
     long long       get_Size();
@@ -23,6 +26,8 @@ public:
 private:
     std::string     _filePatch;
     long long       _fileSize;
+
+
 
     std::ofstream   _writeStream; //stream to read data from socket and write to file
     std::ifstream   _readStream;  //stream to read from file and send to socket

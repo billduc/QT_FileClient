@@ -13,7 +13,7 @@ public:
 
 
     //APIs global
-    bool                TCPconn(std::string host, int port);
+    bool                TCPconn(std::string _host, int _port);
     bool                TLSconn();
     bool                conn_To_Server(std::string host, int port);
     std::string         get_session() {return this->_session;}
@@ -21,21 +21,24 @@ public:
     int                 get_Id() {return this->_Id;}
     void                set_Id(int id) {this->_Id = id;}
     int                 get_SocketFd() {return this->_socketFd;}
+    int                 get_CMD_HEADER();
+    void                send_CMD_HEADER(int _CMD);
 
     //APIs handle main connection
-    bool                send_Login_Request(std::string username, std::string password);
+    bool                send_Login_Request(std::string _username, std::string _password);
     bool                get_Status_Login_Success();
     void                set_Status_Login_Success(bool _state);
     void                send_PING();
 
     //APIs handle file connection
-    bool                send_Requset_Upload(std::string filepatch);
-    bool                share_File(std::string sender, std::string receiver, std::string filepatch);
-    bool                send_File(std::string filepatch);
+    bool                send_Requset_Upload(std::string _filepatch);
+    bool                send_Requset_Download(std::string _fileURL, long long _fileSize);
+    bool                share_File(std::string _sender, std::string _receiver, std::string _filepatch);
+    bool                send_File(std::string _filepatch);
     std::string         get_Url_File_Server();
     bool                get_Status_Send_File_Finished();
     void                set_Status_Send_File_Finished(bool _state);
-
+    void                write_Data(std::string _fileURL, long long _fileSize);
     //craft function
     bool                fsend(std::string filepath);
 
@@ -54,10 +57,11 @@ private:
     std::string         _urlFileServer;
     bool                _statusSendFileFinished;
     bool                _statusLoginSuccess;
+    bool                _dataWriteDoneState;
+    int                 _receivedPart;
 
     char                buffer[BUFFSIZE];
 
-    int                 get_CMD_HEADER();
 
     void                set_Non_Blocking(int &sock);
     void                show_Certs(SSL *ssl);

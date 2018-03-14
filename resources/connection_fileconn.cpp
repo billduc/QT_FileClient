@@ -72,20 +72,103 @@ Connection::send_Requset_Upload(std::string filepatch)
 }
 
 bool
+Connection::send_Requset_Download(std::string _fileURL, long long _fileSize)
+{
+    Packet*     _pk;
+    int         _bytes;
+    int         _cmd;
+    int         _rc;
+
+    this->_isFileConnection     = true;
+    this->_isMainConnection     = false;
+    this->handle_Classify_Connection();
+
+    _pk = new Packet();
+    _pk->appendData(CMD_DOWNLOAD_FILE);
+    _pk->appendData(this->_session);
+    _pk->appendData(_fileURL);
+
+    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
+
+    delete _pk;
+
+    _cmd = this->get_CMD_HEADER();
+
+    if (_cmd == CMD_DOWNLOAD_READY_SEND){
+
+        this->_file->begin_Write_File(_fileURL);
+        this->send_CMD_HEADER(CMD_DOWNLOAD_READY_SAVE);
+        this->write_Data(_fileURL, _fileSize);
+    }
+}
+
+void
+Connection::write_Data(std::string _fileURL, long long _fileSize)
+{
+    char            _buffer[BUFFSIZE];
+    int             _bytes;
+    std::string     _data;
+    long long       _totalData, _recievedData;
+
+    _totalData          = _fileSize;
+    _recievedData       = 0;
+
+    if (_totalData == _recievedData){
+       this->_dataWriteDoneState = true;
+
+       return;
+    }
+    else {
+       if (_recievedData + sizeof(_buffer) <= _totalData)
+       {
+           _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+           if (_bytes > 0){
+               _data = std::string(_buffer, _bytes);
+               std::cout << "#log conn: Write block" << std::endl;
+               // Previous (upload) command continuation, store incoming data to the file
+               std::cout << "#log conn: Part" << ++(this->_receivedPart) << ": " << _bytes << std::endl;
+               this->_file->write_File_Block(_data);
+           } else {
+               //this->_closureRequested = true;
+               std::cerr << "#log conn: 1 read zero data" << std::endl;
+           }
+           return;
+       } else {
+           if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
+               {
+                   _bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
+                   if (_bytes > 0){
+                       _data = std::string(_buffer, _bytes);
+                       std::cout << "#log conn: Write block" << std::endl;
+                       // Previous (upload) command continuation, store incoming data to the file
+                       std::cout << "#log conn: Part" << ++(this->_receivedPart) << ": " << _bytes << std::endl;
+                       this->_file->write_File_Block(_data);
+                   } else {
+                       //this->_closureRequested = true;
+                       std::cerr << "#log conn: 2 read zero data" << std::endl;
+                   }
+               }
+           return;
+       }
+    }
+}
+
+
+bool
 Connection::share_File(std::string _sender, std::string _receiver, std::string _filepatch){
     if (this->send_Requset_Upload(_filepatch)){
         std::cout << "send file to server done";
         this->send_CMD_UPLOAD_FINISH();
         if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
-            std::cout << "server save file finish. this connectin can be close" << std::endl;
+            std::cout << "server save file finish. this connectin can be close"     << std::endl;
             return true;
         } else {
-            std::cerr << "some this wrong when save file to server!!! check again" << std::endl;
+            std::cerr << "some this wrong when save file to server!!! check again"  << std::endl;
             return false;
         }
     }
     else{
-        std::cerr << "some this wrong when send file to server! check again" << std::endl;
+        std::cerr << "some this wrong when send file to server! check again"        << std::endl;
         return false;
     }
 }
@@ -98,7 +181,7 @@ bool
 Connection::send_File(std::string _filepatch){
     long long   _size;
     long long   _dataSend   = 0;
-    int         _count       = 1;
+    int         _count      = 1;
     this->_file->set_File(_filepatch);
     this->_file->open_File_To_Read();
     _size = this->_file->get_Size();
