@@ -6,8 +6,8 @@ import managerConnecion 1.0
 Page {
     id:                 filePage
     title:              "Files"
-    property  string    filepatch: ""
-    property  var       username:  "user1"
+    property  string    filepatch:  ""
+    property  var       username:   "user1"
 
     ListModel {
         id:             fileModel
@@ -18,7 +18,7 @@ Page {
         }
 
         ListElement {
-            fileName: "file 2"
+            fileName:   "file 2"
 //            fileIcon: IconType.file
         }
     }
@@ -56,7 +56,8 @@ Page {
         anchors.bottom:         parent.bottom
         anchors.bottomMargin:   dp(10)
         onClicked: {
-            container.state = "User"
+            //container.state = "User"
+            manageConnecion.receive_File();
         }
     }
 
@@ -74,30 +75,30 @@ Page {
             height:         dp(50)
 
             AppImage {
-                id:         imFile
-                width:      dp(25)
-                height:     dp(25)
-                defaultSource: Qt.resolvedUrl("/media/veracrypt1/projects/QT_FileClient/image/file.jpg")
+                id:             imFile
+                width:          dp(25)
+                height:         dp(25)
+                defaultSource:  Qt.resolvedUrl("/media/veracrypt1/projects/QT_FileClient/image/file.jpg")
                 anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    leftMargin: dp(10)
+                    verticalCenter:     parent.verticalCenter
+                    left:               parent.left
+                    leftMargin:         dp(10)
                 }
             }
             AppText {
-                id: txtFile
-                text: fileName
+                id:         txtFile
+                text:       fileName
                 font.pixelSize: sp(16)
                 anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: imFile.right
-                    leftMargin: dp(10)
+                    verticalCenter:     parent.verticalCenter
+                    left:               imFile.right
+                    leftMargin:         dp(10)
                 }
             }
 
             AppButton {
                 icon:                   IconType.send
-                anchors.right:           parent.right
+                anchors.right:          parent.right
                 //anchors.rightMargin:    dp(10)
                 anchors.bottom:         parent.bottom
                 //anchors.bottomMargin:   dp(10)

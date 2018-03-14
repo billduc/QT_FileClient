@@ -33,3 +33,21 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
     delete this->_listFileConnections.at(id);
     this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
 }
+
+bool
+ManageConnection::receive_File()
+{
+    int _id = this->file_connectToserver();
+    if (_id == -1){
+        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        return false;
+    }
+    else{
+        std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
+    }
+
+    this->_listFileConnections.at(_id)->receive_File("socks5_SourceCode.zip",7096901);
+    delete this->_listFileConnections.at(_id);
+    this->_listFileConnections.erase(this->_listFileConnections.begin()+_id);
+
+}

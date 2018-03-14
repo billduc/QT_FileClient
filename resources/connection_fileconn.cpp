@@ -97,8 +97,10 @@ Connection::send_Requset_Download(std::string _fileURL, long long _fileSize)
     if (_cmd == CMD_DOWNLOAD_READY_SEND){
 
         this->_file->begin_Write_File(_fileURL);
-        this->send_CMD_HEADER(CMD_DOWNLOAD_READY_SAVE);
+        //this->send_CMD_HEADER(CMD_DOWNLOAD_READY_SAVE);
+        std::cout <<"begin save data form server "<<std::endl;
         this->write_Data(_fileURL, _fileSize);
+        std::cout <<"end save data form server "<<std::endl;
     }
 }
 
@@ -113,9 +115,10 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
     _totalData          = _fileSize;
     _recievedData       = 0;
 
+    while(1){
+         std::cout << "#log conn: Write file " << _recievedData << " " << _totalData<< std::endl;
     if (_totalData == _recievedData){
        this->_dataWriteDoneState = true;
-
        return;
     }
     else {
@@ -132,7 +135,6 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
                //this->_closureRequested = true;
                std::cerr << "#log conn: 1 read zero data" << std::endl;
            }
-           return;
        } else {
            if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
                {
@@ -148,8 +150,8 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
                        std::cerr << "#log conn: 2 read zero data" << std::endl;
                    }
                }
-           return;
        }
+    }
     }
 }
 
@@ -158,6 +160,26 @@ bool
 Connection::share_File(std::string _sender, std::string _receiver, std::string _filepatch){
     if (this->send_Requset_Upload(_filepatch)){
         std::cout << "send file to server done";
+        this->send_CMD_UPLOAD_FINISH();
+        if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
+            std::cout << "server save file finish. this connectin can be close"     << std::endl;
+            return true;
+        } else {
+            std::cerr << "some this wrong when save file to server!!! check again"  << std::endl;
+            return false;
+        }
+    }
+    else{
+        std::cerr << "some this wrong when send file to server! check again"        << std::endl;
+        return false;
+    }
+}
+
+bool
+Connection::receive_File(std::string _fileURL, long long _fileSize)
+{
+    if (this->send_Requset_Download(_fileURL, _fileSize)){
+        std::cout << "recieved file from server";
         this->send_CMD_UPLOAD_FINISH();
         if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
             std::cout << "server save file finish. this connectin can be close"     << std::endl;

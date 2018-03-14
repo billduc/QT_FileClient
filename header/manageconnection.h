@@ -19,13 +19,13 @@ public:
     void                            set_Port(int);
 
 private:
-    Connection*                     _mainConnection;
+    Connection                      *_mainConnection;
     std::vector<Connection*>        _listFileConnections;
-    SSL_CTX*                        _ctx;
+    SSL_CTX                         *_ctx;
     QString                         _hostName;
     int                             _port;
     std::string                     _session;
-    std::thread*                    _threadMainConn;
+    std::thread                     *_threadMainConn;
     bool                            _stopThreadMainConn;
     struct timeval                  _timeoutClient;
     std::vector<FILE_TRANSACTION*>  _ListFileTransactions;
@@ -47,6 +47,7 @@ public slots:
     int                             file_connectToserver();
     bool                            sendRequestUpload(QString filepatch);
     bool                            share_File(QString sender, QString receiver, QString filepatch);
+    bool                            receive_File();
 };
 
 #endif // MANAGECONNECTION_H

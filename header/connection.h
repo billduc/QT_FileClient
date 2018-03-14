@@ -34,6 +34,7 @@ public:
     bool                send_Requset_Upload(std::string _filepatch);
     bool                send_Requset_Download(std::string _fileURL, long long _fileSize);
     bool                share_File(std::string _sender, std::string _receiver, std::string _filepatch);
+    bool                receive_File(std::string _fileURL, long long _fileSize);
     bool                send_File(std::string _filepatch);
     std::string         get_Url_File_Server();
     bool                get_Status_Send_File_Finished();
