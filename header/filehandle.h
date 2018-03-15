@@ -23,11 +23,10 @@ public:
     std::string     get_Size_stdString();
     void            set_File(std::string);
     std::string     get_File_Patch();
+
 private:
     std::string     _filePatch;
     long long       _fileSize;
-
-
 
     std::ofstream   _writeStream; //stream to read data from socket and write to file
     std::ifstream   _readStream;  //stream to read from file and send to socket

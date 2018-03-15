@@ -21,14 +21,18 @@ ManageConnection::thread_Handle_Main_Connection_Keepalive()
 
     if (this->_mainConnection->get_Status_Login_Success()){
         _socketFd   = this->_mainConnection->get_SocketFd();
-        _time       = this->_timeoutClient;
+
         FD_ZERO(&_mainSet);
         FD_SET(_socketFd,&_mainSet);
         for(;;){
+            std::cout << "thread send CMD" << std::endl;
+            if (this->_stopThreadMainConn)
+                return;
+            _time       = this->_timeoutClient;
             _rc = select(_socketFd+1, NULL, &_mainSet, NULL, &_time );
             if (_rc > 0){
                 this->_mainConnection->send_PING();
-                sleep(1);
+                sleep(10);
             }
         }
     }
@@ -37,7 +41,41 @@ ManageConnection::thread_Handle_Main_Connection_Keepalive()
 void
 ManageConnection::thread_Handle_Main_Connection_Receive_CMD()
 {
+    struct timeval  _time;
+    fd_set          _mainSet;
+    int             _rc = -1;
+    int             _socketFd;
+    int             _cmd;
 
+    if (this->_mainConnection->get_Status_Login_Success()){
+        _socketFd   = this->_mainConnection->get_SocketFd();
+
+        for(;;){
+            std::cout << "thread receive CMD" << std::endl;
+            if (this->_stopThreadMainConn)
+                return;
+            _time       = this->_timeoutClient;
+            FD_ZERO(&_mainSet);
+            FD_SET(_socketFd,&_mainSet);
+            _rc = select(_socketFd+1, &_mainSet, NULL,  NULL, &_time);
+            if (_rc > 0){
+                _cmd = this->_mainConnection->get_CMD_HEADER();
+                std::cout << "CMD respond: " << _cmd << std::endl;
+                    switch (_cmd) {
+                    case PONG:
+                        std::cout << "receive PONG paket from server" << std::endl;
+                        break;
+                    case CMD_MSG_FILE:
+                        std::cout << "receive CMD_MSG_FILE paket from server" << std::endl;
+                        this->_mainConnection->handle_Upload_CMD_MSG_FILE();
+                        break;
+                    default:
+                        std::cout << "unknow CMD!!!!" << std::endl;
+                        break;
+                }
+            }
+        }
+    }
 }
 
 bool
@@ -54,7 +92,8 @@ ManageConnection::auth_Connection(QString username, QString password)
     this->_mainConnection->send_Login_Request(username.toStdString(), password.toStdString());
     if (this->_mainConnection->get_Status_Login_Success()){
         std::cout << "check log thread " << std::endl;
-        this->_threadMainConn = new std::thread(&ManageConnection::thread_Handle_Main_Connection_Keepalive, this);
+        this->_threadMainConn_send      = new std::thread(&ManageConnection::thread_Handle_Main_Connection_Keepalive, this);
+        this->_threadMainConn_receive   = new std::thread(&ManageConnection::thread_Handle_Main_Connection_Receive_CMD, this);
         std::cout << "check log thread 2" << std::endl;
         return true;
     } else {

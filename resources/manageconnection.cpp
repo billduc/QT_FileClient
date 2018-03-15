@@ -23,8 +23,12 @@ ManageConnection::~ManageConnection()
 {
     //cancle thread
     this->_stopThreadMainConn = true;
-    if (this->_threadMainConn->joinable())
-        this->_threadMainConn->join();
+
+    if (this->_threadMainConn_send->joinable())
+        this->_threadMainConn_send->join();
+    if (this->_threadMainConn_receive->joinable())
+        this->_threadMainConn_receive->join();
+
     //clear memory
     delete this->_mainConnection;
     rep(i,this->_listFileConnections.size()){

@@ -61,7 +61,6 @@ Connection::send_Requset_Upload(std::string filepatch)
             std::cout << "file url: " << this->_urlFileServer << std::endl;
         }
 
-        //this->fsend(filepatch);
         this->send_File(filepatch);
     } else {
         std::cout << "request upload fail" << std::endl;
@@ -164,6 +163,10 @@ Connection::share_File(std::string _sender, std::string _receiver, std::string _
         this->send_CMD_UPLOAD_FINISH();
         if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
             std::cout << "server save file finish. this connectin can be close"     << std::endl;
+            this->_sender                   = _sender;
+            this->_receiver                 = _receiver;
+            this->_dataSizeSend_stdString   = this->_file->get_Size_stdString();
+            this->_dataSizeSend_int         = this->_file->get_Size();
             return true;
         } else {
             std::cerr << "some this wrong when save file to server!!! check again"  << std::endl;
@@ -271,6 +274,32 @@ Connection::check_Respond_CMD_SAVE_FILE_FINISH()
     else
         return false;
 }
+
+std::string
+Connection::get_Data_Size_Send_stdString()
+{
+    return this->_dataSizeSend_stdString;
+}
+
+long long
+Connection::get_Data_Size_Send_Int()
+{
+    return this->_dataSizeSend_int;
+}
+
+
+std::string
+Connection::get_Sender()
+{
+    return this->_sender;
+}
+
+std::string
+Connection::get_Receiver()
+{
+    return this->_receiver;
+}
+
 
 bool
 Connection::get_Status_Send_File_Finished()

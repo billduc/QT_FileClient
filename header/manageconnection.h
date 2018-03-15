@@ -25,7 +25,8 @@ private:
     QString                         _hostName;
     int                             _port;
     std::string                     _session;
-    std::thread                     *_threadMainConn;
+    std::thread                     *_threadMainConn_send;
+    std::thread                     *_threadMainConn_receive;
     bool                            _stopThreadMainConn;
     struct timeval                  _timeoutClient;
     std::vector<FILE_TRANSACTION*>  _ListFileTransactions;

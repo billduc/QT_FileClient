@@ -19,6 +19,9 @@ Connection::Connection(SSL_CTX * ctxp, int id) : _Id(id)
     this->_statusSendFileFinished   = false;
     this->_dataWriteDoneState       = false;
     this->_file                     = new FileHandle();
+    this->_sender                   = "";
+    this->_receiver                 = "";
+    this->_dataSizeSend_stdString   = "";
 }
 
 Connection::~Connection(){
@@ -235,24 +238,6 @@ Connection::get_Url_File_Server()
     return this->_urlFileServer;
 }
 
-bool
-Connection::send_CMD_MSG_FILE(std::string _sender, std::string _receiver)
-{
-    Packet*     _pk;
-    //send CMD_MSG_FILE
-    _pk = new Packet();
-
-    _pk->appendData(CMD_MSG_FILE);
-    //pk->appendData(this->_session);
-    _pk->appendData(_sender);
-    _pk->appendData(_receiver);
-    _pk->appendData(this->_urlFileServer);
-    _pk->appendData(this->_file->get_Size_stdString());
-
-    SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
-    delete _pk;
-    return true;
-}
 
 int
 Connection::get_CMD_HEADER()
@@ -267,8 +252,6 @@ Connection::get_CMD_HEADER()
     FD_SET(this->_socketFd, &_fdset);
 
     _num_Fd_Incomming = select(this->_socketFd+1, &_fdset, NULL, NULL, &_time);
-
-    //std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << _num_Fd_Incomming << std::endl;
 
     if (_num_Fd_Incomming <= 0){
         std::cerr << "timeout!!!!!" << std::endl;

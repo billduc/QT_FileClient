@@ -76,6 +76,72 @@ Connection::send_PING()
     return;
 }
 
+
+
+void
+Connection::send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction)
+{
+    Packet*             _pk;
+    fd_set              _FDSet;
+    struct timeval      _time;
+
+    //send CMD_MSG_FILE
+    _pk = new Packet();
+
+    _pk->appendData(CMD_MSG_FILE);
+    _pk->appendData(_fileTransaction->_sender);
+    _pk->appendData(_fileTransaction->_receiver);
+    _pk->appendData(_fileTransaction->_url);
+    _pk->appendData(std::to_string(_fileTransaction->_filesize));
+
+    _time = this->_timeout;
+    FD_ZERO(&_FDSet);
+    FD_SET(_socketFd,&_FDSet);
+
+    int _rc = select(_socketFd+1, NULL, &_FDSet, NULL, NULL); // wait until can sendable
+    if (_rc > 0){
+        SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
+        _fileTransaction->_status = 0;
+    }
+    delete _pk;
+    return;
+}
+
+FILE_TRANSACTION*
+Connection::handle_Upload_CMD_MSG_FILE()
+{
+    char                _buffer[BUFFSIZE];
+    int                 _bytes, _cmd;
+    Packet*             _pk;
+    std::string         _sender, _receiver, _urlFile, _filesize;
+    FILE_TRANSACTION*   _ft;
+
+    _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+
+    if (_bytes > 0){
+        _pk = new Packet(std::string(_buffer,_bytes));
+        if (_pk->IsAvailableData())
+            _sender     = _pk->getContent();
+        if (_pk->IsAvailableData())
+            _receiver   = _pk->getContent();
+        if (_pk->IsAvailableData())
+            _urlFile    = _pk->getContent();
+        if (_pk->IsAvailableData())
+            _filesize   = _pk->getContent();
+        std::cout <<"#log conn: msg\ncmd: " << CMD_MSG_FILE << "\nsender: " << _sender << "\nreceiver: " << _receiver << "\nurlfile: " << _urlFile <<"\nfile size: " << _filesize << std::endl;
+        _ft = new FILE_TRANSACTION;
+
+        _ft->_sender    = _sender;
+        _ft->_receiver  = _receiver;
+        _ft->_url       = _urlFile;
+        _ft->_filesize  = std::stoi(_filesize);
+        delete _pk;
+        return _ft;
+    }
+
+    return NULL;
+}
+
 void
 Connection::set_Status_Login_Success(bool _state)
 {

@@ -29,6 +29,8 @@ public:
     bool                get_Status_Login_Success();
     void                set_Status_Login_Success(bool _state);
     void                send_PING();
+    void                send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction);
+    FILE_TRANSACTION*   handle_Upload_CMD_MSG_FILE();
 
     //APIs handle file connection
     bool                send_Requset_Upload(std::string _filepatch);
@@ -36,10 +38,14 @@ public:
     bool                share_File(std::string _sender, std::string _receiver, std::string _filepatch);
     bool                receive_File(std::string _fileURL, long long _fileSize);
     bool                send_File(std::string _filepatch);
-    std::string         get_Url_File_Server();
     bool                get_Status_Send_File_Finished();
     void                set_Status_Send_File_Finished(bool _state);
     void                write_Data(std::string _fileURL, long long _fileSize);
+    std::string         get_Url_File_Server();
+    std::string         get_Sender();
+    std::string         get_Receiver();
+    std::string         get_Data_Size_Send_stdString();
+    long long           get_Data_Size_Send_Int();
     //craft function
     bool                fsend(std::string filepath);
 
@@ -63,12 +69,19 @@ private:
 
     char                buffer[BUFFSIZE];
 
+    //properties for File connection
+    std::string         _sender;
+    std::string         _receiver;
+    std::string         _dataSizeSend_stdString;
+    long long           _dataSizeSend_int;
+
+
 
     void                set_Non_Blocking(int &sock);
     void                show_Certs(SSL *ssl);
     bool                handle_Classify_Connection();
     SSL_CTX*            InitCTX(std::string fileCert);
-    bool                send_CMD_MSG_FILE(std::string _sender, std::string _receiver);
+
 
     //these APIs for file connection
     bool                send_CMD_UPLOAD_FINISH();

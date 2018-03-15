@@ -53,10 +53,11 @@
 #define CMF_SHARE_FINISH            15
 
 #define MAXCONN                     1000
-#define	BUFFSIZE                    4096	/* buffer size for reads and writes */
+/* buffer size for reads and writes */
+#define	BUFFSIZE                    4096
 
-#define PING                        111
-#define PONG                        222
+#define PING                        31
+#define PONG                        32
 
 #define CMD_IS_MAIN_CONNECTION      88
 #define CMD_IS_FILE_CONNECTION      99
@@ -80,7 +81,8 @@ struct FILE_TRANSACTION {
     std::string     _url;
     std::string     _checksum;
     long long       _filesize;
-    bool            _status = false;
+    int             _status = -1;
+
 };
 
 

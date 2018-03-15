@@ -29,7 +29,21 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
     }
 
     //this->_listFileConnections.at(id)->sendRequsetUpload(filepatch.toStdString());
-    this->_listFileConnections.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
+    bool ok = this->_listFileConnections.at(id)->share_File(sender.toStdString(), receiver.toStdString(), filepatch.toStdString());
+    if (ok){
+        FILE_TRANSACTION *_fileTransaction;
+        _fileTransaction = new FILE_TRANSACTION;
+
+        _fileTransaction->_sender       =   this->_listFileConnections.at(id)->get_Sender();
+        _fileTransaction->_receiver     =   this->_listFileConnections.at(id)->get_Receiver();
+        _fileTransaction->_url          =   this->_listFileConnections.at(id)->get_Url_File_Server();
+        _fileTransaction->_filesize     =   this->_listFileConnections.at(id)->get_Data_Size_Send_Int();
+        _fileTransaction->_status       =   0;
+
+        this->_mainConnection->send_CMD_MSG_FILE(_fileTransaction);
+        this->_ListFileTransactions.emplace_back(_fileTransaction);
+    }
+
     delete this->_listFileConnections.at(id);
     this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
 }
