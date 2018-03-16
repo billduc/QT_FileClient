@@ -62,6 +62,8 @@ Connection::send_Requset_Upload(std::string filepatch)
         }
 
         this->send_File(filepatch);
+        this->_threadSendFile = new  std::thread(&Connection::send_File, this, filepatch);
+
     } else {
         std::cout << "request upload fail" << std::endl;
         return false;
@@ -113,6 +115,7 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
 
     _totalData          = _fileSize;
     _recievedData       = 0;
+    this->_totalChunk   = _totalData;
 
     while(1){
         std::cout << "#log conn: Write file " << _recievedData << " " << _totalData<< std::endl;
@@ -155,6 +158,8 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
                     }
             }
         }
+        this->_numOfChunkComplete = _recievedData;
+        emit signal_Persent_Progress(this->get_PersentProgress());
     }
 }
 
@@ -219,6 +224,7 @@ Connection::send_File(std::string _filepatch){
     size_t _totalChunks     =   _size / BUFFSIZE;
     size_t _sizeLastChunk   =   _size % BUFFSIZE;
 
+    this->_totalChunk = _totalChunks;
 
     rep(i,_totalChunks){
         bzero(_buffer, BUFFSIZE);
@@ -228,6 +234,8 @@ Connection::send_File(std::string _filepatch){
         _dataSend += si;
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(_buffer) << std::endl;
         ++_count;
+        this->_numOfChunkComplete = i;
+        emit signal_Persent_Progress(this->get_PersentProgress());
     }
 
     if (_sizeLastChunk > 0){
@@ -239,6 +247,8 @@ Connection::send_File(std::string _filepatch){
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << _sizeLastChunk << std::endl;
         ++_count;
     }
+    this->_numOfChunkComplete = _totalChunks;
+    emit signal_Persent_Progress(this->get_PersentProgress());
 
     std::cout << "data sended: " << _dataSend  << " of  Datasize: " << _size << std::endl;
     this->_file->close_Read_Stream();

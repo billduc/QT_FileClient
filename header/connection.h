@@ -1,16 +1,18 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include <QObject>
 #include "filesys.h"
 #include "packet.h"
 #include "filehandle.h"
 
-class Connection
+class Connection : public QObject
 {
+    Q_OBJECT
 public:
+    explicit Connection(QObject *parent = nullptr);
     Connection(SSL_CTX * ctxp, int id = 1);
     ~Connection();
-
 
     //APIs global
     bool                TCPconn(std::string _host, int _port);
@@ -23,6 +25,7 @@ public:
     int                 get_SocketFd() {return this->_socketFd;}
     int                 get_CMD_HEADER();
     void                send_CMD_HEADER(int _CMD);
+    int                 get_PersentProgress();
 
     //APIs handle main connection
     bool                send_Login_Request(std::string _username, std::string _password);
@@ -67,6 +70,11 @@ private:
     bool                _dataWriteDoneState;
     int                 _receivedPart;
 
+    std::thread         *_threadSendFile;
+
+    int                 _totalChunk;
+    int                 _numOfChunkComplete;
+
     char                buffer[BUFFSIZE];
 
     //properties for File connection
@@ -87,6 +95,11 @@ private:
     bool                send_CMD_UPLOAD_FINISH();
     bool                check_Respond_CMD_SAVE_FILE_FINISH();
     bool                check_Respond_CMD_DOWNLOAD_FINISH();
+
+signals:
+    void                signal_Persent_Progress(int _persent);
+
+public slots:
 };
 
 #endif // CONNECTION_H

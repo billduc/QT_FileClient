@@ -2,29 +2,37 @@
 
 extern "C"
 {
-    SSL_CTX* InitCTX(std::string fileCert);
-    void setNonBlocking(int &sock);
+    SSL_CTX*    InitCTX(std::string fileCert);
+    void        setNonBlocking(int &sock);
+    int         TCPconnC(std::string ipAddr, int port);
+    bool        TLSconn();
 }
 
+Connection::Connection(QObject *parent) : QObject(parent)
+{
+
+}
 
 Connection::Connection(SSL_CTX * ctxp, int id) : _Id(id)
 {
-    this->_ctx                      = ctxp;
-    this->_timeout.tv_sec           = 5;
-    this->_timeout.tv_usec          = 0;
-    this->_receivedPart             = 0;
-    this->_isMainConnection         = false;
-    this->_isFileConnection         = false;
-    this->_statusLoginSuccess       = false;
-    this->_statusSendFileFinished   = false;
-    this->_dataWriteDoneState       = false;
-    this->_file                     = new FileHandle();
-    this->_sender                   = "";
-    this->_receiver                 = "";
-    this->_dataSizeSend_stdString   = "";
+    this->_ctx                      =   ctxp;
+    this->_timeout.tv_sec           =   5;
+    this->_timeout.tv_usec          =   0;
+    this->_receivedPart             =   0;
+    this->_isMainConnection         =   false;
+    this->_isFileConnection         =   false;
+    this->_statusLoginSuccess       =   false;
+    this->_statusSendFileFinished   =   false;
+    this->_dataWriteDoneState       =   false;
+    this->_file                     =   new FileHandle();
+    this->_sender                   =   "";
+    this->_receiver                 =   "";
+    this->_dataSizeSend_stdString   =   "";
 }
 
 Connection::~Connection(){
+    if (this->_threadSendFile->joinable())
+        this->_threadSendFile->join();
     SSL_free(this->_ssl);
     close(this->_socketFd);
     delete this->_file;
@@ -56,14 +64,14 @@ Connection::InitCTX(std::string fileCert)
     return ctx;
 }
 
-bool
-Connection::TCPconn(std::string ipAddr, int port)
+int
+TCPconnC(std::string ipAddr, int port)
 {
-    this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
-    std::cout << "@connection log: fd " << this->_socketFd << std::endl;
-    if (this->_socketFd < 0){
+    int _socketFd = socket(AF_INET, SOCK_STREAM, 0);
+    std::cout << "@connection log: fd " << _socketFd << std::endl;
+    if (_socketFd < 0){
         std::cerr <<"@connection log: ERROR create socket!!!" << std::endl;
-        return false;
+        return -1;
     }
 
     //set non-blocking model for socket
@@ -77,7 +85,7 @@ Connection::TCPconn(std::string ipAddr, int port)
 
     if ( server == NULL ){
         std::cerr << "@connection log: ERROR, no such host" << std::endl;
-        return false;
+        return -1;
     }
 
     bzero( (char *) &serv_addr, sizeof(serv_addr) );
@@ -88,12 +96,18 @@ Connection::TCPconn(std::string ipAddr, int port)
 
     serv_addr.sin_port = htons(port);
 
-    if ( connect(this->_socketFd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
+    if ( connect(_socketFd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
         std::cerr << "@connection log: ERROR connectiong to server!!!" << std::endl;
         return -1;
     }
 
-    return true;
+    return _socketFd;
+}
+
+bool
+Connection::TCPconn(std::string ipAddr, int port){
+    this->_socketFd =TCPconnC(ipAddr, port);
+    return this->_socketFd > 0 -1 ? true : false;
 }
 
 bool
@@ -182,6 +196,13 @@ Connection::send_CMD_HEADER(int _CMD)
     SSL_write(this->_ssl, &_pk->getData()[0], _pk->getData().size() );
     delete _pk;
     return;
+}
+
+int
+Connection::get_PersentProgress()
+{
+    int _persent = (float)(this->_numOfChunkComplete / this->_totalChunk) * 100;
+    return _persent;
 }
 
 /*

@@ -2,12 +2,30 @@ import VPlayApps 1.0
 import QtQuick 2.2
 import QtQuick.Dialogs 1.0
 import managerConnecion 1.0
+import Connection 1.0
+import QtGraphicalEffects 1.0
+import QtQuick.Controls 1.4
+import QtQuick.Controls 2.3
 
 Page {
     id:                 filePage
     title:              "Files"
-    property  string    filepatch:  ""
-    property  var       username:   "user1"
+
+    property  string    filepatch:          ""
+    property  var       username:           "user1"
+    property  real      _presentProgress:   0
+
+    Connection{
+        id: _connection
+    }
+
+    Connections {
+        target: _connection
+        onSignal_Persent_Progress: {
+           _presentProgress = _persent
+           console.log(_presentProgress)
+        }
+    }
 
     ListModel {
         id:             fileModel
@@ -153,5 +171,17 @@ Page {
         width:      parent.width * 0.18
         height:     parent.height * 0.4
         //color:      "lightsteelblue"
+    }
+
+
+    ProgressBar {
+        id:                         progressbar
+        anchors.bottom:             parent.bottom
+        anchors.horizontalCenter:   parent.horizontalCenter
+        width:                      parent.width * 0.6
+        height:                     px(60)
+        value:                      _presentProgress
+        from:                       0
+        to:                         100
     }
 }
