@@ -108,7 +108,7 @@ Connection::send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction)
 }
 
 FILE_TRANSACTION*
-Connection::handle_Upload_CMD_MSG_FILE()
+Connection::handle_Receive_CMD_MSG_FILE()
 {
     char                _buffer[BUFFSIZE];
     int                 _bytes, _cmd;
@@ -129,12 +129,14 @@ Connection::handle_Upload_CMD_MSG_FILE()
         if (_pk->IsAvailableData())
             _filesize   = _pk->getContent();
         std::cout <<"#log conn: msg\ncmd: " << CMD_MSG_FILE << "\nsender: " << _sender << "\nreceiver: " << _receiver << "\nurlfile: " << _urlFile <<"\nfile size: " << _filesize << std::endl;
+
         _ft = new FILE_TRANSACTION;
 
         _ft->_sender    = _sender;
         _ft->_receiver  = _receiver;
         _ft->_url       = _urlFile;
         _ft->_filesize  = std::stoi(_filesize);
+
         delete _pk;
         return _ft;
     }

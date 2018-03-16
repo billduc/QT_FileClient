@@ -1,5 +1,5 @@
 #include "../header/connection.h"
-
+#include "../header/wrap.h"
 
 bool
 Connection::send_Requset_Upload(std::string filepatch)
@@ -122,7 +122,9 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
         } else {
             if (_recievedData + sizeof(_buffer) <= _totalData)
             {
-                _bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+                //_bytes   = SSL_read(this->_ssl, _buffer, sizeof(_buffer));
+                _bytes   = SF_SSL_READ(this->_socketFd,  this->_ssl, _buffer, sizeof(_buffer));
+
                 if (_bytes > 0){
                     _data = std::string(_buffer, _bytes);
                     std::cout << "#log conn: Write block" << std::endl;
@@ -137,7 +139,8 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
             } else {
                 if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
                     {
-                        _bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
+                        //_bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
+                        _bytes   = SF_SSL_READ(this->_socketFd, this->_ssl, _buffer, (_totalData - _recievedData));
                         _recievedData += _bytes;
                         if (_bytes > 0){
                             _data = std::string(_buffer, _bytes);
@@ -207,6 +210,8 @@ Connection::send_File(std::string _filepatch){
     long long   _size;
     long long   _dataSend   = 0;
     int         _count      = 1;
+    char        _buffer[BUFFSIZE];
+
     this->_file->set_File(_filepatch);
     this->_file->open_File_To_Read();
     _size = this->_file->get_Size();
@@ -216,18 +221,20 @@ Connection::send_File(std::string _filepatch){
 
 
     rep(i,_totalChunks){
-        bzero(this->buffer, BUFFSIZE);
-        this->_file->read_File_Block(this->buffer, BUFFSIZE);
-        int si = SSL_write(this->_ssl, this->buffer, BUFFSIZE);
+        bzero(_buffer, BUFFSIZE);
+        this->_file->read_File_Block(_buffer, BUFFSIZE);
+        //int si = SSL_write(this->_ssl, this->buffer, BUFFSIZE);
+        int si = SF_SSL_WRITE(this->_socketFd, this->_ssl, _buffer, BUFFSIZE);
         _dataSend += si;
-        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(this->buffer) << std::endl;
+        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(_buffer) << std::endl;
         ++_count;
     }
 
     if (_sizeLastChunk > 0){
-        bzero(this->buffer, BUFFSIZE);
-        this->_file->read_File_Block(this->buffer, _sizeLastChunk);
-        int si = SSL_write(this->_ssl, this->buffer, _sizeLastChunk);
+        bzero(_buffer, BUFFSIZE);
+        this->_file->read_File_Block(_buffer, _sizeLastChunk);
+        //int si = SSL_write(this->_ssl, this->buffer, _sizeLastChunk);
+        int si = SF_SSL_WRITE(this->_socketFd, this->_ssl, _buffer, _sizeLastChunk);
         _dataSend += si;
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << _sizeLastChunk << std::endl;
         ++_count;

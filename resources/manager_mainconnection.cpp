@@ -64,10 +64,16 @@ ManageConnection::thread_Handle_Main_Connection_Receive_CMD()
                     switch (_cmd) {
                     case PONG:
                         std::cout << "receive PONG paket from server" << std::endl;
+
                         break;
                     case CMD_MSG_FILE:
                         std::cout << "receive CMD_MSG_FILE paket from server" << std::endl;
-                        this->_mainConnection->handle_Upload_CMD_MSG_FILE();
+                        FILE_TRANSACTION *_fileTransaction;
+                        _fileTransaction = this->_mainConnection->handle_Receive_CMD_MSG_FILE();
+                        emit signal_Notify_Download(QString::fromStdString(_fileTransaction->_sender),
+                                                    QString::fromStdString(_fileTransaction->_receiver),
+                                                    QString::fromStdString(_fileTransaction->_url),
+                                                    QString::number(_fileTransaction->_filesize));
                         break;
                     default:
                         std::cout << "unknow CMD!!!!" << std::endl;

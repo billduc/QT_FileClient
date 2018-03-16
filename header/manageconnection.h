@@ -40,6 +40,7 @@ private:
     void                            wait_Auth_Main_Connection();
     //void                          handle_CMD_
 signals:
+    void                            signal_Notify_Download(QString sender, QString receiver, QString fileName, QString fileSize);
 
 public slots:
     bool                            main_connectToServer(QString host, int port);
@@ -49,7 +50,7 @@ public slots:
     int                             file_connectToserver();
     bool                            sendRequestUpload(QString filepatch);
     bool                            share_File(QString sender, QString receiver, QString filepatch);
-    bool                            receive_File();
+    bool                            receive_File(QString _filename, QString _fileSize);
 };
 
 #endif // MANAGECONNECTION_H

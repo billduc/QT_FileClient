@@ -30,11 +30,11 @@ Page {
             rowSpacing:                 rowSpacingSize
             columns:                    1
 
-            property real itemSize: Qt.platform.os === "ios"?dp(250):dp(200)
-            property real imageSize: Qt.platform.os === "ios"?dp(30):dp(15)
-            property real textSize: Qt.platform.os === "ios"?sp(20):sp(15)
-            property real checkBoxSize: Qt.platform.os === "ios"?dp(20):dp(13)
-            property real rowSpacingSize: Qt.platform.os === "ios"?dp(15):dp(10)
+            property real itemSize:         Qt.platform.os === "ios"?dp(250):dp(200)
+            property real imageSize:        Qt.platform.os === "ios"?dp(30):dp(15)
+            property real textSize:         Qt.platform.os === "ios"?sp(20):sp(15)
+            property real checkBoxSize:     Qt.platform.os === "ios"?dp(20):dp(13)
+            property real rowSpacingSize:   Qt.platform.os === "ios"?dp(15):dp(10)
 
             Item {
                 id:                     itemUsername

@@ -30,7 +30,7 @@ public:
     void                set_Status_Login_Success(bool _state);
     void                send_PING();
     void                send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction);
-    FILE_TRANSACTION*   handle_Upload_CMD_MSG_FILE();
+    FILE_TRANSACTION*   handle_Receive_CMD_MSG_FILE();
 
     //APIs handle file connection
     bool                send_Requset_Upload(std::string _filepatch);

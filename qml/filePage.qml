@@ -57,7 +57,7 @@ Page {
         anchors.bottomMargin:   dp(10)
         onClicked: {
             //container.state = "User"
-            manageConnecion.receive_File();
+            popupDownload.open()
         }
     }
 

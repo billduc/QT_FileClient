@@ -21,11 +21,11 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
     int id = this->file_connectToserver();
 
     if (id == -1){
-        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        std::cerr << "Log managerConnection: error create file connection to server!!"  << std::endl;
         return false;
     }
     else{
-        std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
+        std::cout << "@Log managerConnection: create file connecion success"            << std::endl;
     }
 
     //this->_listFileConnections.at(id)->sendRequsetUpload(filepatch.toStdString());
@@ -49,18 +49,20 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
 }
 
 bool
-ManageConnection::receive_File()
+ManageConnection::receive_File(QString _filename, QString _fileSize)
 {
     int _id = this->file_connectToserver();
     if (_id == -1){
-        std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
+        std::cerr << "@Log managerConnection: error create file connection to server!!"     << std::endl;
         return false;
     }
     else{
-        std::cout <<"@Log managerConnection: create file connecion success" << std::endl;
+        std::cout << "@Log managerConnection: create file connecion success"                << std::endl;
     }
 
-    this->_listFileConnections.at(_id)->receive_File("socks5_SourceCode.zip",7096901);
+    //this->_listFileConnections.at(_id)->receive_File("socks5_SourceCode.zip",7096901);
+    this->_listFileConnections.at(_id)->receive_File(_filename.toStdString(), _fileSize.toLongLong());
+    //this->_listFileConnections.at(_id)->receive_File("Visual_Paradigm_14_2_20171201_Linux64.sh",220348416);
     delete this->_listFileConnections.at(_id);
     this->_listFileConnections.erase(this->_listFileConnections.begin()+_id);
 

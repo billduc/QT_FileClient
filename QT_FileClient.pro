@@ -37,7 +37,8 @@ SOURCES += main.cpp \
     resources/connection_craft.cpp \
     resources/manager_mainconnection.cpp \
     resources/manager_fileconnection.cpp \
-    resources/manager_craft.cpp
+    resources/manager_craft.cpp \
+    resources/wopenssl.cpp
 
 
 android {
@@ -67,7 +68,8 @@ HEADERS += \
     header/md5.h \
     header/packet.h \
     header/uploadfile.h \
-    header/database.h
+    header/database.h \
+    header/wrap.h
 
 DISTFILES += \
     qml/login.qml \
