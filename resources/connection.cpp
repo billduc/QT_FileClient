@@ -201,6 +201,7 @@ Connection::send_CMD_HEADER(int _CMD)
 int
 Connection::get_PersentProgress()
 {
+    std::cout << "@log debug: emit signal update progress" << std::endl;
     int _persent = (float)(this->_numOfChunkComplete / this->_totalChunk) * 100;
     return _persent;
 }

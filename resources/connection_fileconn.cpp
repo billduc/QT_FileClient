@@ -40,7 +40,7 @@ Connection::send_Requset_Upload(std::string filepatch)
 
     std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << rc << std::endl;
 
-    if (rc == 0){
+    if (rc <= 0){
         std::cerr << "timeout login request connection!!!" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -60,9 +60,10 @@ Connection::send_Requset_Upload(std::string filepatch)
             this->_urlFileServer = pk->getContent();
             std::cout << "file url: " << this->_urlFileServer << std::endl;
         }
-
+        //using thread main to send data.
         this->send_File(filepatch);
-        this->_threadSendFile = new  std::thread(&Connection::send_File, this, filepatch);
+        //create new thread to send data.
+        //this->_threadSendFile = new  std::thread(&Connection::send_File, this, filepatch);
 
     } else {
         std::cout << "request upload fail" << std::endl;
@@ -99,9 +100,9 @@ Connection::send_Requset_Download(std::string _fileURL, long long _fileSize)
 
         this->_file->begin_Write_File(_fileURL);
         //this->send_CMD_HEADER(CMD_DOWNLOAD_READY_SAVE);
-        std::cout <<"begin save data form server "<<std::endl;
+        std::cout << "begin save data form server "  <<std::endl;
         this->write_Data(_fileURL, _fileSize);
-        std::cout <<"end save data form server "<<std::endl;
+        std::cout << "end save data form server "    <<std::endl;
     }
 }
 
@@ -140,7 +141,7 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
                     std::cerr << "#log conn: 1 read zero data" << std::endl;
                 }
             } else {
-                if ((_totalData - _recievedData < sizeof(_buffer)) && (_totalData > _recievedData))
+                if ((_totalData - _recievedData <= sizeof(_buffer)) && (_totalData > _recievedData))
                     {
                         //_bytes   = SSL_read(this->_ssl, _buffer, (_totalData - _recievedData));
                         _bytes   = SF_SSL_READ(this->_socketFd, this->_ssl, _buffer, (_totalData - _recievedData));
@@ -159,7 +160,7 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
             }
         }
         this->_numOfChunkComplete = _recievedData;
-        emit signal_Persent_Progress(this->get_PersentProgress());
+        //emit signal_Persent_Progress(this->get_PersentProgress());
     }
 }
 
@@ -193,15 +194,15 @@ Connection::receive_File(std::string _fileURL, long long _fileSize)
     if (this->send_Requset_Download(_fileURL, _fileSize)){
         std::cout << "recieved file from server" << std::endl;;
         if (this->check_Respond_CMD_DOWNLOAD_FINISH()){
-            std::cout << "server save file finish. this connectin can be close"     << std::endl;
+            std::cout << "Server save file finish. this connectin can be close"      << std::endl;
             return true;
         } else {
-            std::cerr << "some this wrong when save file to server!!! check again"  << std::endl;
+            std::cerr << "Some thing wrong when save file to server!!! check again"  << std::endl;
             return false;
         }
     }
     else{
-        std::cerr << "some this wrong when send file to server! check again"        << std::endl;
+        std::cerr << "some this wrong when send file to server! check again"         << std::endl;
         return false;
     }
 }
@@ -235,7 +236,7 @@ Connection::send_File(std::string _filepatch){
         std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(_buffer) << std::endl;
         ++_count;
         this->_numOfChunkComplete = i;
-        emit signal_Persent_Progress(this->get_PersentProgress());
+        //emit signal_Persent_Progress(this->get_PersentProgress());
     }
 
     if (_sizeLastChunk > 0){
@@ -248,7 +249,7 @@ Connection::send_File(std::string _filepatch){
         ++_count;
     }
     this->_numOfChunkComplete = _totalChunks;
-    emit signal_Persent_Progress(this->get_PersentProgress());
+    //emit signal_Persent_Progress(this->get_PersentProgress());
 
     std::cout << "data sended: " << _dataSend  << " of  Datasize: " << _size << std::endl;
     this->_file->close_Read_Stream();

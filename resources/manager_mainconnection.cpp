@@ -43,7 +43,7 @@ ManageConnection::thread_Handle_Main_Connection_Receive_CMD()
 {
     struct timeval  _time;
     fd_set          _mainSet;
-    int             _rc = -1;
+    int             _rc         = -1;
     int             _socketFd;
     int             _cmd;
 

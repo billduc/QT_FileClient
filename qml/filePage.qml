@@ -74,8 +74,7 @@ Page {
         anchors.bottom:         parent.bottom
         anchors.bottomMargin:   dp(10)
         onClicked: {
-            //container.state = "User"
-            popupDownload.open()
+            container.state = "User"
         }
     }
 
@@ -183,5 +182,16 @@ Page {
         value:                      _presentProgress
         from:                       0
         to:                         100
+    }
+    Text {
+        id: txtProgress
+        anchors{
+            top:        progressbar.bottom
+            centerIn:   parent
+        }
+
+        text:           _presentProgress
+        font.pixelSize: px(15)
+
     }
 }

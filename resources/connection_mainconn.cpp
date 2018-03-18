@@ -1,4 +1,5 @@
 #include "../header/connection.h"
+#include "../header/wrap.h"
 
 bool
 Connection::send_Login_Request(std::string _username, std::string _password)
@@ -77,7 +78,6 @@ Connection::send_PING()
 }
 
 
-
 void
 Connection::send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction)
 {
@@ -99,6 +99,7 @@ Connection::send_CMD_MSG_FILE(FILE_TRANSACTION *_fileTransaction)
     FD_SET(_socketFd,&_FDSet);
 
     int _rc = select(_socketFd+1, NULL, &_FDSet, NULL, NULL); // wait until can sendable
+
     if (_rc > 0){
         SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size());
         _fileTransaction->_status = 0;
@@ -128,7 +129,12 @@ Connection::handle_Receive_CMD_MSG_FILE()
             _urlFile    = _pk->getContent();
         if (_pk->IsAvailableData())
             _filesize   = _pk->getContent();
-        std::cout <<"#log conn: msg\ncmd: " << CMD_MSG_FILE << "\nsender: " << _sender << "\nreceiver: " << _receiver << "\nurlfile: " << _urlFile <<"\nfile size: " << _filesize << std::endl;
+        std::cout << "#log conn: msg\n-cmd: "    << CMD_MSG_FILE    <<
+                     "\n-sender: "               << _sender         <<
+                     "\n-receiver: "             << _receiver       <<
+                     "\n-urlfile: "              << _urlFile        <<
+                     "\n-file size: "            << _filesize       <<
+                     std::endl;
 
         _ft = new FILE_TRANSACTION;
 

@@ -1,3 +1,4 @@
+
 #include "../header/manageconnection.h"
 
 
@@ -40,12 +41,27 @@ ManageConnection::share_File(QString sender, QString receiver, QString filepatch
         _fileTransaction->_filesize     =   this->_listFileConnections.at(id)->get_Data_Size_Send_Int();
         _fileTransaction->_status       =   0;
 
+        std::cout << "Log file transaction: "    <<
+                    "\n-_sender: "              << _fileTransaction->_sender    <<
+                    "\n-_receiver: "            << _fileTransaction->_receiver  <<
+                    "\n-_url: "                 << _fileTransaction->_url       <<
+                    "\n-_filesize: "            << _fileTransaction->_filesize  <<
+                    "\n-_status: "              << _fileTransaction->_status    << std::endl;
+
         this->_mainConnection->send_CMD_MSG_FILE(_fileTransaction);
+
+        std::cout << "send_CMD_MSG_FILE ok" << std::endl;
+
         this->_ListFileTransactions.emplace_back(_fileTransaction);
+        //std::cout << "check error1 " << std::endl;
+
     }
 
-    delete this->_listFileConnections.at(id);
-    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
+    //delete this->_listFileConnections.at(id);
+    //std::cout << "check error2 " << std::endl;
+    //this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
+    //std::cout << "check error3 " << std::endl;
+    return true;
 }
 
 bool
@@ -56,14 +72,13 @@ ManageConnection::receive_File(QString _filename, QString _fileSize)
         std::cerr << "@Log managerConnection: error create file connection to server!!"     << std::endl;
         return false;
     }
-    else{
+    else {
         std::cout << "@Log managerConnection: create file connecion success"                << std::endl;
     }
 
-    //this->_listFileConnections.at(_id)->receive_File("socks5_SourceCode.zip",7096901);
     this->_listFileConnections.at(_id)->receive_File(_filename.toStdString(), _fileSize.toLongLong());
-    //this->_listFileConnections.at(_id)->receive_File("Visual_Paradigm_14_2_20171201_Linux64.sh",220348416);
-    delete this->_listFileConnections.at(_id);
-    this->_listFileConnections.erase(this->_listFileConnections.begin()+_id);
+
+    //delete this->_listFileConnections.at(_id);
+    //this->_listFileConnections.erase(this->_listFileConnections.begin()+_id);
 
 }
