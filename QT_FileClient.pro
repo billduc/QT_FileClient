@@ -38,7 +38,12 @@ SOURCES += main.cpp \
     resources/manager_mainconnection.cpp \
     resources/manager_fileconnection.cpp \
     resources/manager_craft.cpp \
-    resources/wopenssl.cpp
+    resources/wopenssl.cpp \
+    resources/sf_user.cpp \
+    resources/sf_file.cpp \
+    resources/network/sf_core.cpp \
+    resources/network/sf_connection.cpp
+
 
 
 android {
@@ -69,7 +74,11 @@ HEADERS += \
     header/packet.h \
     header/uploadfile.h \
     header/database.h \
-    header/wrap.h
+    header/wrap.h \
+    header/sf_user.h \
+    header/sf_file.h \
+    resources/network/sf_core.h \
+    resources/network/sf_connection.h
 
 DISTFILES += \
     qml/login.qml \
@@ -116,4 +125,5 @@ DISTFILES += \
     image/checked.png \
     image/cancel.png \
     image/add-page.png \
-    image/download.svg
+    image/download.svg \
+    qml/MainPage.qml

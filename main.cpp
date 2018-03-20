@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
     string md5code = md5("test");
     std::cout << md5code << std::endl;
 
-    qmlRegisterType<ManageConnection>("managerConnecion",1,0,"ManageConnection");
-    qmlRegisterType<Connection>("Connection",1,0,"Connection");
+    qmlRegisterType<ManageConnection>   ("managerConnecion",    1,  0,    "ManageConnection");
+    qmlRegisterType<Connection>         ("Connection",          1,  0,    "Connection");
+
     // Use platform-specific fonts instead of V-Play's default font
     vplay.setPreservePlatformFonts(true);
 

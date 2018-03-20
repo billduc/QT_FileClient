@@ -70,7 +70,9 @@ Packet::getData()
 bool
 Packet::appendData(int cmd)
 {
-    std::cout << "%Log build paccket: buil Int" << std::endl;
+    std::cout   << "%Log build paccket: buil Int"
+                << std::endl;
+
     PACKET pk;
     pk.clear();
     pk = buildIntField(cmd);
@@ -83,7 +85,9 @@ Packet::appendData(int cmd)
 bool
 Packet::appendData(std::string s)
 {
-    std::cout << "%Log build paccket: buil string" << std::endl;
+    std::cout   << "%Log build paccket: buil string"
+                << std::endl;
+
     PACKET pk;
     pk.clear();
     pk = buildStringField(s);

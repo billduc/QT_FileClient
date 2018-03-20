@@ -15,13 +15,10 @@ Page {
     property  var       username:           "user1"
     property  real      _presentProgress:   0
 
-    Connection{
-        id: _connection
-    }
 
     Connections {
-        target: _connection
-        onSignal_Persent_Progress: {
+        target: manageConnecion
+        onSignal_Update_Persent_Progress: {
            _presentProgress = _persent
            console.log(_presentProgress)
         }
@@ -122,7 +119,8 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     //manageConnecion.sendRequestUpload(filepatch);
-                    manageConnecion.share_File(_userName, currentUser,filepatch);
+                    //manageConnecion.share_File(_userName, currentUser,filepatch);
+                    manageConnecion.share_File_Save_Server(_userName, currentUser,filepatch);
                 }
 
             }
@@ -183,6 +181,7 @@ Page {
         from:                       0
         to:                         100
     }
+
     Text {
         id: txtProgress
         anchors{

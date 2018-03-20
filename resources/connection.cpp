@@ -31,8 +31,8 @@ Connection::Connection(SSL_CTX * ctxp, int id) : _Id(id)
 }
 
 Connection::~Connection(){
-    if (this->_threadSendFile->joinable())
-        this->_threadSendFile->join();
+//    if (this->_threadSendFile->joinable())
+//        this->_threadSendFile->join();
     SSL_free(this->_ssl);
     close(this->_socketFd);
     delete this->_file;
@@ -68,9 +68,14 @@ int
 TCPconnC(std::string ipAddr, int port)
 {
     int _socketFd = socket(AF_INET, SOCK_STREAM, 0);
-    std::cout << "@connection log: fd " << _socketFd << std::endl;
+
+    std::cout   << "@connection log: fd " << _socketFd
+                << std::endl;
+
     if (_socketFd < 0){
-        std::cerr <<"@connection log: ERROR create socket!!!" << std::endl;
+        std::cerr   << "@connection log: ERROR create socket!!!"
+                    << std::endl;
+
         return -1;
     }
 
@@ -84,7 +89,9 @@ TCPconnC(std::string ipAddr, int port)
     server = gethostbyname(ipAddr.c_str());
 
     if ( server == NULL ){
-        std::cerr << "@connection log: ERROR, no such host" << std::endl;
+        std::cerr   << "@connection log: ERROR, no such host"
+                    << std::endl;
+
         return -1;
     }
 
@@ -97,7 +104,9 @@ TCPconnC(std::string ipAddr, int port)
     serv_addr.sin_port = htons(port);
 
     if ( connect(_socketFd, (struct sockaddr*) &serv_addr, sizeof(serv_addr) ) ){
-        std::cerr << "@connection log: ERROR connectiong to server!!!" << std::endl;
+        std::cerr   << "@connection log: ERROR connectiong to server!!!"
+                    << std::endl;
+
         return -1;
     }
 
@@ -120,35 +129,46 @@ Connection::TLSconn()
     SSL_set_connect_state(this->_ssl);
 
     if (SSL_connect(this->_ssl) == -1 ){
-        std::cerr << "ERROR: ssl connection fail" << std::endl;
+        std::cerr   << "ERROR: ssl connection fail"
+                    << std::endl;
+
         int ret = 888;
         SSL_get_error(this->_ssl, ret);
         switch (ret) {
             case SSL_ERROR_WANT_READ:
-                std::cerr << "SSL_ERROR_WANT_READ" << std::endl;
+                std::cerr   << "SSL_ERROR_WANT_READ"
+                            << std::endl;
+
                 break;
             case SSL_ERROR_WANT_WRITE:
-                std::cerr << "SSL_ERROR_WANT_WRITE" << std::endl;
+                std::cerr   << "SSL_ERROR_WANT_WRITE"
+                            << std::endl;
                 break;
             case SSL_ERROR_WANT_CONNECT:
-                std::cerr << "SSL_ERROR_WANT_CONNECT:" << std::endl;
+                std::cerr   << "SSL_ERROR_WANT_CONNECT:"
+                            << std::endl;
                 break;
             case SSL_ERROR_SYSCALL:
-                std::cerr << "SSL_ERROR_SYSCALL" << std::endl;
+                std::cerr   << "SSL_ERROR_SYSCALL"
+                            << std::endl;
                 break;
             case SSL_ERROR_ZERO_RETURN:
-                std::cerr << "SSL_ERROR_ZERO_RETURN" << std::endl;
+                std::cerr   << "SSL_ERROR_ZERO_RETURN"
+                            << std::endl;
                 break;
             case SSL_ERROR_WANT_X509_LOOKUP:
-                std::cerr << "SSL_ERROR_WANT_X509_LOOKUP" << std::endl;
+                std::cerr   << "SSL_ERROR_WANT_X509_LOOKUP"
+                            << std::endl;
                 break;
             default:
                 break;
         }
         return false;
     } else {
-        std::cout << "Log: Establish TLS connection with server " << std::endl;
-        std::cout << "Log: Encryption: " << SSL_get_cipher(this->_ssl) << std::endl;
+        std::cout   << "Log: Establish TLS connection with server "
+                    << std::endl;
+        std::cout   << "Log: Encryption: " << SSL_get_cipher(this->_ssl)
+                    << std::endl;
         return true;
     }
 }
@@ -158,14 +178,16 @@ Connection::set_Non_Blocking(int &sock)
 {
     int opts = fcntl(sock,F_GETFL, 0);
     if (opts < 0) {
-        std::cerr << "@log: Error getting socket flags" << std::endl;
+        std::cerr   << "@log: Error getting socket flags"
+                    << std::endl;
         return;
     }
 
     opts = (opts | O_NONBLOCK);
 
     if (fcntl(sock,F_SETFL,opts) < 0) {
-        std::cerr << "@log: Error setting socket to non-blocking" << std::endl;
+        std::cerr   << "@log: Error setting socket to non-blocking"
+                    << std::endl;
         return;
     }
 }
@@ -174,17 +196,23 @@ bool
 Connection::conn_To_Server(std::string host, int port)
 {
     if ( !this->TCPconn(host, port) ){
-        std::cerr << "ERROR: Fail to connecting to server" << std::endl;
+        std::cerr   << "ERROR: Fail to connecting to server"
+                    << std::endl;
+
         return false;
     }
 
-    std::cout << "TCP connection established" << std::endl;
+    std::cout   << "TCP connection established"
+                << std::endl;
 
     if ( !this->TLSconn() ){
-        std::cerr <<"ERROR: Fail to establish TLS connection" << std::endl;
+        std::cerr   <<"ERROR: Fail to establish TLS connection"
+                    << std::endl;
+
         return false;
     }
-    std::cout <<"TLS connection established " << SSL_get_fd(this->_ssl)  <<  std::endl;
+    std::cout   << "TLS connection established " << SSL_get_fd(this->_ssl)
+                <<  std::endl;
     return true;
 }
 
@@ -201,7 +229,9 @@ Connection::send_CMD_HEADER(int _CMD)
 int
 Connection::get_PersentProgress()
 {
-    std::cout << "@log debug: emit signal update progress" << std::endl;
+    std::cout   << "@log debug: emit signal update progress"
+                << std::endl;
+
     int _persent = (float)(this->_numOfChunkComplete / this->_totalChunk) * 100;
     return _persent;
 }
@@ -233,7 +263,9 @@ Connection::handle_Classify_Connection()
     _rc      =   select(this->_socketFd + 1, &this->_workingSet, NULL, NULL, &_time);
 
     if (_rc == 0){
-        std::cerr << "timeout classify connection!!!" << std::endl;
+        std::cerr   << "timeout classify connection!!!"
+                    << std::endl;
+
         exit(EXIT_FAILURE);
     }
 
@@ -241,12 +273,17 @@ Connection::handle_Classify_Connection()
     _pk      = new Packet(std::string(_buffer,_bytes));
     _cmd     = _pk->getCMDHeader();
 
-    std::cout << "cmd respond: " << _cmd << std::endl;
+    std::cout   << "cmd respond: " << _cmd
+                << std::endl;
 
     if (_cmd == CMD_CLASSIFY_DONE){
-        std::cout << "classify connection done." << std::endl;
+        std::cout   << "classify connection done."
+                    << std::endl;
+
     } else {
-        std::cerr << "fail classify conneciton!!! exit." << std::endl;
+        std::cerr   << "fail classify conneciton!!! exit."
+                    << std::endl;
+
         exit(EXIT_FAILURE);
     }
 
@@ -276,7 +313,9 @@ Connection::get_CMD_HEADER()
     _num_Fd_Incomming = select(this->_socketFd+1, &_fdset, NULL, NULL, &_time);
 
     if (_num_Fd_Incomming <= 0){
-        std::cerr << "timeout!!!!!" << std::endl;
+        std::cerr   << "timeout!!!!!"
+                    << std::endl;
+
         exit(EXIT_FAILURE);
     }
 

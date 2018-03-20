@@ -4,9 +4,9 @@
 bool
 ManageConnection::sendRequestUpload(QString filepatch)
 {
-    int id = this->file_connectToserver();
+    Connection *_conn = this->file_connectToserver();
 
-    if (id == -1){
+    if (_conn == NULL){
         std::cerr << "Log managerConnection: error create file connection to server!!" << std::endl;
         return false;
     }
@@ -14,8 +14,8 @@ ManageConnection::sendRequestUpload(QString filepatch)
         std::cout <<"Log managerConnection: create file connecion success" << std::endl;
     }
 
-    this->_listFileConnections.at(id)->send_Requset_Upload(filepatch.toStdString());
+    //this->_listFileConnections.at(id)->send_Requset_Upload(filepatch.toStdString());
 
-    delete this->_listFileConnections.at(id);
-    this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
+    delete _conn;
+    //this->_listFileConnections.erase(this->_listFileConnections.begin()+id);
 }

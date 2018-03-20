@@ -25,14 +25,17 @@ FileHandle::open_File_To_Read(std::string _fileName)
     // modes for binary file  |std::ios::ate
     this->_readStream.open(_fileName.c_str(), std::ios::in|std::ios::binary);
     if (this->_readStream.fail()) {
-        std::cout << "Reading file '" << _fileName << "' failed!" << std::endl;
+        std::cout   << "Reading file '"     << _fileName
+                    << "' failed!"          << std::endl;
+
         return (false);
     }
     if (this->_readStream.is_open()) {
         this->_readStream.seekg(0, this->_readStream.beg);
         return (true);
     }
-    std::cerr << "Unable to open file '" << _fileName << " '" << std::endl;
+    std::cerr   << "Unable to open file '"  << _fileName
+                << " '"                     << std::endl;
     return (false);
 }
 
@@ -40,14 +43,17 @@ bool
 FileHandle::open_File_To_Read(){
     this->_readStream.open(this->_filePatch.c_str(), std::ios::in|std::ios::binary);
     if (this->_readStream.fail()) {
-        std::cout << "Reading file '" << this->_filePatch << "' failed!" << std::endl;
+        std::cout   << "Reading file '"     << this->_filePatch
+                    << "' failed!"          << std::endl;
+
         return (false);
     }
     if (this->_readStream.is_open()) {
         this->_readStream.seekg(0, this->_readStream.beg);
         return (true);
     }
-    std::cerr << "Unable to open file '" << this->_filePatch << " '" << std::endl;
+    std::cerr   << "Unable to open file '"  << this->_filePatch
+                << " '"                     << std::endl;
     return (false);
 }
 
@@ -67,7 +73,8 @@ FileHandle::format_File_Patch(std::string& filename)
     //check filepatch format QML
     //if (filename.find("file://")){
         filename.erase(filename.begin(), filename.begin()+7);
-        std::cout << "!Log file: file path formated: " << filename << std::endl;
+        std::cout   << "!Log file: file path formated: " << filename
+                    << std::endl;
     //}
     return;
 }
@@ -87,7 +94,13 @@ FileHandle::get_File_Name(std::string filepath)
     if (post == -1)
         return std::string(filepath);
     else{
-        //cout << post  <<" " << filepath << " " << sizeof(filepath)<< " " << filepath.length() - post << endl;
+        /*
+        std::cout   << post
+                    << " " << filepath
+                    << " " << sizeof(filepath)
+                    << " " << filepath.length() - post
+                    << std::endl;
+        */
         std::string filename = filepath.substr(post+1, filepath.length() - post);
         return filename;
     }
@@ -103,10 +116,13 @@ FileHandle::read_File_Block(char* buffer, int sizeblock)
 int
 FileHandle::write_File_Block(std::string content) {
     if(!this->_writeStream) {
-        std::cerr << "Cannot write to output file" << std::endl;
+        std::cerr   << "Cannot write to output file"
+                    << std::endl;
         return (EXIT_FAILURE);
     }
-    std::cout << "$Log FileHandle: Appending to file" << std::endl;
+    std::cout   << "$Log FileHandle: Appending to file"
+                << std::endl;
+
     //this->_dataReceived += content.length();
     (this->_writeStream) << content;
     return (EXIT_SUCCESS);
@@ -116,10 +132,16 @@ int
 FileHandle::begin_Write_File(std::string _fileName) {
     this->_writeStream.open(_fileName.c_str(), std::ios::out|std::ios::binary); // output file
     if(!this->_writeStream) {
-        std::cerr << "$Log FileHandle: Cannot open output file '" << _fileName << "'" << std::endl;
+        std::cerr   << "$Log FileHandle: Cannot open output file '"   << _fileName
+                    << "'"
+                    << std::endl;
+
         return (EXIT_FAILURE);
     }
-    std::cout << "$Log FileHandle: Beginning writing to file '" << _fileName << "'" << std::endl;
+    std::cout   << "$Log FileHandle: Beginning writing to file '"   << _fileName
+                << "'"
+                << std::endl;
+
     return (EXIT_SUCCESS);
 }
 /*

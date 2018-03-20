@@ -21,6 +21,10 @@
 #include <netdb.h>
 #include <fcntl.h>
 
+//QT core
+#include <QThread>
+#include <QtNetwork>
+
 #define TRUE                        1
 #define FALSE                       0
 

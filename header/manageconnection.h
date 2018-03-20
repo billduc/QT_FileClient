@@ -39,17 +39,27 @@ private:
     void                            thread_Handle_Main_Connection_Keepalive();
     void                            thread_Handle_Main_Connection_Receive_CMD();
     void                            wait_Auth_Main_Connection();
-    //void                          handle_CMD_
+
+private slots:
+    void                            send_CMD_MSG_FILE();
+
 signals:
     void                            signal_Notify_Download(QString sender, QString receiver, QString fileName, QString fileSize);
+    void                            signal_Update_Persent_Progress(int _persent);
+
+    //signal to handle upload process
+
+public slots:
+    //void                            slot_Emit_Persent_Progress(int _persent);
 
 public slots:
     bool                            main_connectToServer(QString host, int port);
     bool                            auth_Connection(QString username, QString password);
 
     //these APIs for file connection
-    int                             file_connectToserver();
+    Connection*                     file_connectToserver();
     bool                            sendRequestUpload(QString filepatch);
+    bool                            share_File_Save_Server(QString sender, QString receiver, QString filepatch);
     bool                            share_File(QString sender, QString receiver, QString filepatch);
     bool                            receive_File(QString _filename, QString _fileSize);
 };

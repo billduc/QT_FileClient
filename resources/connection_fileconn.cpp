@@ -13,10 +13,18 @@ Connection::send_Requset_Upload(std::string filepatch)
     this->_isFileConnection     = true;
     this->_isMainConnection     = false;
     this->handle_Classify_Connection();
-    std::cout << "#log Connecion: before set file patch "<< filepatch << "inner class: " << this->_file->get_File_Patch() << std::endl;
+
+    std::cout   << "#log Connecion: before set file patch "     << filepatch
+                << "inner class: "                              << this->_file->get_File_Patch()
+                << std::endl;
+
     this->_file->format_File_Patch(filepatch);
     this->_file->set_File(filepatch);
-    std::cout << "#log Connecion: before set file patch "<< filepatch << "inner class: " << this->_file->get_File_Patch() << std::endl;
+
+    std::cout   << "#log Connecion: before set file patch "     << filepatch
+                << "inner class: "                              << this->_file->get_File_Patch()
+                << std::endl;
+
     //build and send login request CMD_UPLOAD_FILE
     pk = new Packet();
     pk->appendData(CMD_UPLOAD_FILE);
@@ -28,7 +36,8 @@ Connection::send_Requset_Upload(std::string filepatch)
 
     delete pk;
 
-    std::cout << "send CMD request upload finished" << std::endl;
+    std::cout   << "send CMD request upload finished"
+                << std::endl;
 
     bzero(this->buffer, sizeof(this->buffer));
     struct timeval time = this->_timeout;
@@ -38,10 +47,13 @@ Connection::send_Requset_Upload(std::string filepatch)
 
     rc = select(this->_socketFd+1, &fdset, NULL, NULL, &time);
 
-    std::cerr << "log before select " << SSL_get_fd(this->_ssl) << " " << rc << std::endl;
+    std::cerr   << "log before select " << SSL_get_fd(this->_ssl)
+                << " - "                << rc << std::endl;
 
     if (rc <= 0){
-        std::cerr << "timeout login request connection!!!" << std::endl;
+        std::cerr   << "timeout login request connection!!!"
+                    << std::endl;
+
         exit(EXIT_FAILURE);
     }
 
@@ -50,23 +62,37 @@ Connection::send_Requset_Upload(std::string filepatch)
     if (pk->IsAvailableData())
         cmd = pk->getCMDHeader();
 
-    std::cout << "read CMD reponse upload finished " << bytes << std::endl;
+    std::cout   << "read CMD reponse upload finished " << bytes
+                << std::endl;
 
-    std::cout << "cmd respond: " << cmd << std::endl;
+    std::cout   << "cmd respond: " << cmd
+                << std::endl;
 
     if (cmd == CMD_UPLOAD_READY) {
-        std::cout << "ready to upload file" << std::endl;
+        std::cout   << "ready to upload file"
+                    << std::endl;
+
         if (pk->IsAvailableData()){
             this->_urlFileServer = pk->getContent();
-            std::cout << "file url: " << this->_urlFileServer << std::endl;
+
+            std::cout   << "file url: " << this->_urlFileServer
+                        << std::endl;
+
         }
         //using thread main to send data.
         this->send_File(filepatch);
-        //create new thread to send data.
-        //this->_threadSendFile = new  std::thread(&Connection::send_File, this, filepatch);
 
+        //create new thread to send data.
+        /*
+        this->_threadSendFile = new  std::thread(&Connection::send_File, this, filepatch);
+
+        if (this->_threadSendFile->joinable())
+            this->_threadSendFile->join();
+        */
     } else {
-        std::cout << "request upload fail" << std::endl;
+        std::cout   << "request upload fail"
+                    << std::endl;
+
         return false;
     }
 
@@ -100,9 +126,13 @@ Connection::send_Requset_Download(std::string _fileURL, long long _fileSize)
 
         this->_file->begin_Write_File(_fileURL);
         //this->send_CMD_HEADER(CMD_DOWNLOAD_READY_SAVE);
-        std::cout << "begin save data form server "  <<std::endl;
+        std::cout   << "begin save data form server "
+                    << std::endl;
+
         this->write_Data(_fileURL, _fileSize);
-        std::cout << "end save data form server "    <<std::endl;
+
+        std::cout   << "end save data form server "
+                    << std::endl;
     }
 }
 
@@ -119,7 +149,10 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
     this->_totalChunk   = _totalData;
 
     while(1){
-        std::cout << "#log conn: Write file " << _recievedData << " " << _totalData<< std::endl;
+        std::cout << "#log conn: Write file "   << _recievedData
+                  << " - "                      << _totalData
+                  << std::endl;
+
         if (_totalData == _recievedData){
             this->_dataWriteDoneState = true;
             return;
@@ -131,14 +164,20 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
 
                 if (_bytes > 0){
                     _data = std::string(_buffer, _bytes);
-                    std::cout << "#log conn: Write block" << std::endl;
+                    std::cout   << "#log conn: Write block"
+                                << std::endl;
                     // Previous (upload) command continuation, store incoming data to the file
-                    std::cout << "#log conn: Part " << ++(this->_receivedPart) << ": " << _bytes << std::endl;
+
+                    std::cout   << "#log conn: Part "     << ++(this->_receivedPart)
+                                << ": "                   << _bytes
+                                << std::endl;
+
                     this->_file->write_File_Block(_data);
                     _recievedData += _bytes;
                 } else {
                     //this->_closureRequested = true;
-                    std::cerr << "#log conn: 1 read zero data" << std::endl;
+                    std::cerr   << "#log conn: 1 read zero data"
+                                << std::endl;
                 }
             } else {
                 if ((_totalData - _recievedData <= sizeof(_buffer)) && (_totalData > _recievedData))
@@ -171,19 +210,25 @@ Connection::share_File(std::string _sender, std::string _receiver, std::string _
         std::cout << "send file to server done";
         this->send_CMD_UPLOAD_FINISH();
         if (this->check_Respond_CMD_SAVE_FILE_FINISH()){
-            std::cout << "server save file finish. this connectin can be close"     << std::endl;
+            std::cout   << "server save file finish. this connectin can be close"
+                        << std::endl;
+
             this->_sender                   = _sender;
             this->_receiver                 = _receiver;
             this->_dataSizeSend_stdString   = this->_file->get_Size_stdString();
             this->_dataSizeSend_int         = this->_file->get_Size();
+
             return true;
         } else {
-            std::cerr << "some this wrong when save file to server!!! check again"  << std::endl;
+            std::cerr   << "some this wrong when save file to server!!! check again"
+                        << std::endl;
+
             return false;
         }
     }
     else{
-        std::cerr << "some this wrong when send file to server! check again"        << std::endl;
+        std::cerr   << "some this wrong when send file to server! check again"
+                    << std::endl;
         return false;
     }
 }
@@ -192,17 +237,24 @@ bool
 Connection::receive_File(std::string _fileURL, long long _fileSize)
 {
     if (this->send_Requset_Download(_fileURL, _fileSize)){
-        std::cout << "recieved file from server" << std::endl;;
+        std::cout   << "recieved file from server"
+                    << std::endl;;
+
         if (this->check_Respond_CMD_DOWNLOAD_FINISH()){
-            std::cout << "Server save file finish. this connectin can be close"      << std::endl;
+            std::cout   << "Server save file finish. this connectin can be close"
+                        << std::endl;
+
             return true;
         } else {
-            std::cerr << "Some thing wrong when save file to server!!! check again"  << std::endl;
+            std::cerr   << "Some thing wrong when save file to server!!! check again"
+                        << std::endl;
+
             return false;
         }
     }
     else{
-        std::cerr << "some this wrong when send file to server! check again"         << std::endl;
+        std::cerr   << "some this wrong when send file to server! check again"
+                    << std::endl;
         return false;
     }
 }
@@ -233,10 +285,15 @@ Connection::send_File(std::string _filepatch){
         //int si = SSL_write(this->_ssl, this->buffer, BUFFSIZE);
         int si = SF_SSL_WRITE(this->_socketFd, this->_ssl, _buffer, BUFFSIZE);
         _dataSend += si;
-        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << sizeof(_buffer) << std::endl;
+
+        std::cout   << " ssl send ok "  << _count
+                    << " : "            << si
+                    <<  " - "           << sizeof(_buffer)
+                    << std::endl;
         ++_count;
         this->_numOfChunkComplete = i;
-        //emit signal_Persent_Progress(this->get_PersentProgress());
+
+        emit signal_Persent_Progress(this->get_PersentProgress());
     }
 
     if (_sizeLastChunk > 0){
@@ -245,13 +302,21 @@ Connection::send_File(std::string _filepatch){
         //int si = SSL_write(this->_ssl, this->buffer, _sizeLastChunk);
         int si = SF_SSL_WRITE(this->_socketFd, this->_ssl, _buffer, _sizeLastChunk);
         _dataSend += si;
-        std::cout << " ssl send ok " << _count  << ": " << si <<  " - " << _sizeLastChunk << std::endl;
+
+        std::cout   << " ssl send ok "  << _count
+                    << ": "             << si
+                    << " - "           << _sizeLastChunk
+                    << std::endl;
         ++_count;
     }
     this->_numOfChunkComplete = _totalChunks;
-    //emit signal_Persent_Progress(this->get_PersentProgress());
 
-    std::cout << "data sended: " << _dataSend  << " of  Datasize: " << _size << std::endl;
+    emit signal_Persent_Progress(this->get_PersentProgress());
+
+    std::cout   << "data sended: "      << _dataSend
+                << " of  Datasize: "    << _size
+                << std::endl;
+
     this->_file->close_Read_Stream();
 
     return true;
@@ -274,7 +339,9 @@ Connection::send_CMD_UPLOAD_FINISH()
 bool
 Connection::check_Respond_CMD_DOWNLOAD_FINISH()
 {
-    std::cout << "Log Connection: check_Respond_CMD_SAVE_FILE_FINISH" << std::endl;
+    std::cout   << "Log Connection: check_Respond_CMD_SAVE_FILE_FINISH"
+                << std::endl;
+
     int _cmd = this->get_CMD_HEADER();
     if (_cmd == CMD_DOWNLOAD_FINISH)
         return true;
@@ -285,7 +352,9 @@ Connection::check_Respond_CMD_DOWNLOAD_FINISH()
 bool
 Connection::check_Respond_CMD_SAVE_FILE_FINISH()
 {
-    std::cout << "Log Connection: check_Respond_CMD_SAVE_FILE_FINISH" << std::endl;
+    std::cout   << "Log Connection: check_Respond_CMD_SAVE_FILE_FINISH"
+                << std::endl;
+
     int _cmd = this->get_CMD_HEADER();
     if (_cmd == CMD_SAVE_FILE_FINISH)
         return true;

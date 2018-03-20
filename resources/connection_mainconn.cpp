@@ -20,14 +20,21 @@ Connection::send_Login_Request(std::string _username, std::string _password)
     _pk->appendData(_username);
     _pk->appendData(_password);
 
-    std::cout << "username: " << _username << " passwork: " << _password << std::endl;
-    std::cout << SSL_get_fd(this->_ssl) << " send CMD request login "  << _pk->getData().size() << " - " << _pk->getData_stdString() << std::endl;
+    std::cout   << "- username: "       << _username
+                << "\n- passwork: "     << _password
+                << std::endl;
+
+    std::cout   << " send CMD request login "   << _pk->getData().size()
+                << " - "                        << _pk->getData_stdString()
+                << " in FD: "                   << SSL_get_fd(this->_ssl)
+                <<  std::endl;
 
     SSL_write(this->_ssl,  &_pk->getData()[0], _pk->getData().size() );
 
     delete _pk;
 
-    std::cout << "send CMD request login finished " << std::endl;
+    std::cout   << "send CMD request login finished "
+                << std::endl;
 
     //read data respond from server.
     bzero(_buffer, sizeof(_buffer));
@@ -39,7 +46,9 @@ Connection::send_Login_Request(std::string _username, std::string _password)
     int rc = select(this->_socketFd+1, &fdset, NULL, NULL, &time);
 
     if (rc <= 0){
-        std::cerr << "timeout/error send login request connection!!!" << std::endl;
+        std::cerr   << "timeout/error send login request connection!!!"
+                    << std::endl;
+
         exit(EXIT_FAILURE);
     }
 
@@ -48,18 +57,27 @@ Connection::send_Login_Request(std::string _username, std::string _password)
     if (_pk->IsAvailableData())
         cmd = _pk->getCMDHeader();
 
-    std::cout << "read CMD reponse login finished " << bytes << std::endl;
+    std::cout   << "read CMD reponse login finished: "    << bytes
+                << std::endl;
 
-    std::cout << "cmd respond: " << cmd << std::endl;
+    std::cout   << "cmd respond: "                        << cmd
+                << std::endl;
+
     if (cmd == CMD_AUTHEN_SUCCESS) {
-        std::cout << "login success" << std::endl;
+        std::cout   << "login success"
+                    << std::endl;
+
         if (_pk->IsAvailableData())
             _sessionServerResponse = _pk->getContent();
-        std::cout << "session: " << _sessionServerResponse << std::endl;
+
+        std::cout   << "session: "                          << _sessionServerResponse
+                    << std::endl;
+
         this->_session = _sessionServerResponse;
         this->set_Status_Login_Success(true);
     } else {
-        std::cout << "login fail" << std::endl;
+        std::cout   << "login fail"
+                    << std::endl;
     }
 
     delete _pk;
@@ -129,12 +147,13 @@ Connection::handle_Receive_CMD_MSG_FILE()
             _urlFile    = _pk->getContent();
         if (_pk->IsAvailableData())
             _filesize   = _pk->getContent();
-        std::cout << "#log conn: msg\n-cmd: "    << CMD_MSG_FILE    <<
-                     "\n-sender: "               << _sender         <<
-                     "\n-receiver: "             << _receiver       <<
-                     "\n-urlfile: "              << _urlFile        <<
-                     "\n-file size: "            << _filesize       <<
-                     std::endl;
+
+        std::cout   << "#log conn: msg\n-cmd: "    << CMD_MSG_FILE
+                    << "\n-sender: "               << _sender
+                    << "\n-receiver: "             << _receiver
+                    << "\n-urlfile: "              << _urlFile
+                    << "\n-file size: "            << _filesize
+                    << std::endl;
 
         _ft = new FILE_TRANSACTION;
 

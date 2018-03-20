@@ -2,6 +2,8 @@
 #define CONNECTION_H
 
 #include <QObject>
+#include <QFile>
+
 #include "filesys.h"
 #include "packet.h"
 #include "filehandle.h"
@@ -39,6 +41,9 @@ public:
     bool                send_Requset_Upload(std::string _filepatch);
     bool                send_Requset_Download(std::string _fileURL, long long _fileSize);
     bool                share_File(std::string _sender, std::string _receiver, std::string _filepatch);
+
+
+
     bool                receive_File(std::string _fileURL, long long _fileSize);
     bool                send_File(std::string _filepatch);
     bool                get_Status_Send_File_Finished();
@@ -51,7 +56,6 @@ public:
     long long           get_Data_Size_Send_Int();
     //craft function
     bool                fsend(std::string filepath);
-
 
 private:
     int                 _socketFd;
@@ -72,8 +76,8 @@ private:
 
     std::thread         *_threadSendFile;
 
-    int                 _totalChunk;
-    int                 _numOfChunkComplete;
+    float               _totalChunk;
+    float               _numOfChunkComplete;
 
     char                buffer[BUFFSIZE];
 
@@ -82,7 +86,6 @@ private:
     std::string         _receiver;
     std::string         _dataSizeSend_stdString;
     long long           _dataSizeSend_int;
-
 
 
     void                set_Non_Blocking(int &sock);

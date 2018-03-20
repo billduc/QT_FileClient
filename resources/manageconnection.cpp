@@ -72,14 +72,19 @@ ManageConnection::setNonBlocking(int &sock)
 {
     int opts = fcntl(sock,F_GETFL, 0);
     if (opts < 0) {
-        std::cerr << "@log: Error getting socket flags" << std::endl;
+
+        std::cerr   << "@log: Error getting socket flags"
+                    << std::endl;
         return;
     }
 
     opts = (opts | O_NONBLOCK);
 
     if (fcntl(sock,F_SETFL,opts) < 0) {
-        std::cerr << "@log: Error setting socket to non-blocking" << std::endl;
+
+        std::cerr   << "@log: Error setting socket to non-blocking"
+                    << std::endl;
+
         return;
     }
 }
