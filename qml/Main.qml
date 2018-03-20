@@ -4,6 +4,10 @@ import QtQuick.Window 2.2
 import managerConnecion 1.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
+import "src/lists"
+import "src/bars"
+import "src/buttons"
+import "src/variables/fontawesome.js" as FontAwesome
 
 App {
     // You get free licenseKeys from https://v-play.net/licenseKey
@@ -86,7 +90,6 @@ App {
             Component.onCompleted:
             {
                 container.state = "Login"
-
             }
         }
 
