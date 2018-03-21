@@ -126,4 +126,6 @@ DISTFILES += \
     image/cancel.png \
     image/add-page.png \
     image/download.svg \
-    qml/MainPage.qml
+    qml/MainPage.qml \
+    qml/listUserPage.qml \
+    qml/dialogFileTransferRequest.qml

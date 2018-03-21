@@ -79,6 +79,14 @@ ManageConnection::share_File_Save_Server(QString sender, QString receiver, QStri
 }
 
 bool
+ManageConnection::receive_File_Save_Server(QString _filename, QString _fileSize)
+{
+    std::thread *_threadReceiveFile;
+    _threadReceiveFile = new std::thread(&ManageConnection::receive_File, this, _filename, _fileSize);
+}
+
+
+bool
 ManageConnection::receive_File(QString _filename, QString _fileSize)
 {
     Connection *_conn = this->file_connectToserver();
@@ -90,6 +98,9 @@ ManageConnection::receive_File(QString _filename, QString _fileSize)
     else {
         std::cout   << "@Log managerConnection: create file connecion success"
                     << std::endl;
+
+        connect(_conn, SIGNAL(signal_Persent_Progress(int)),
+                this, SIGNAL(signal_Update_Persent_Progress(int)) );
     }
 
     _conn->receive_File(_filename.toStdString(), _fileSize.toLongLong());

@@ -199,7 +199,7 @@ Connection::write_Data(std::string _fileURL, long long _fileSize)
             }
         }
         this->_numOfChunkComplete = _recievedData;
-        //emit signal_Persent_Progress(this->get_PersentProgress());
+        emit signal_Persent_Progress(this->get_PersentProgress());
     }
 }
 

@@ -60,6 +60,7 @@ public slots:
     Connection*                     file_connectToserver();
     bool                            sendRequestUpload(QString filepatch);
     bool                            share_File_Save_Server(QString sender, QString receiver, QString filepatch);
+    bool                            receive_File_Save_Server(QString _filename, QString _fileSize);
     bool                            share_File(QString sender, QString receiver, QString filepatch);
     bool                            receive_File(QString _filename, QString _fileSize);
 };

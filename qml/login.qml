@@ -139,7 +139,6 @@ Page {
                 loginManual()
             }
         }
-
     }
 
     function loginManual(){
@@ -155,7 +154,8 @@ Page {
 
         if ( manageConnecion.auth_Connection(txtUsername.text,txtPassword.text) == true){
             //container.state = qsTr("Master");
-            container.state = qsTr("User");
+            //container.state = qsTr("User");
+            container.state = qsTr("listUsers");
             _userName = txtUsername.text
             _password = txtPassword.text
         }

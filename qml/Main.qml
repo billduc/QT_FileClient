@@ -1,8 +1,10 @@
 import VPlayApps 1.0
 import QtQuick 2.0
+import QtQuick 2.3
 import QtQuick.Window 2.2
 import managerConnecion 1.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 import "src/lists"
 import "src/bars"
@@ -17,14 +19,16 @@ App {
     //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
     //licenseKey: "<generate one from https://v-play.net/licenseKey>"
 
-    property string currentUser:    ""
-    property string _userName:      ""
-    property string _password:      ""
-    property string _sender:        ""
-    property string _receiver:      ""
-    property string _fileName:      ""
-    property string _fileSize:      ""
+    property string currentUser:            ""
+    property string _userName:              ""
+    property string _password:              ""
+    property string _sender:                ""
+    property string _receiver:              ""
+    property string _fileName:              ""
+    property string _fileSize:              ""
+    property bool   _isFileStransfer:       flase
 
+    //FontLoader{ source: "qrc:/src/fonts/fontawesome-webfont.ttf"}
 
     ManageConnection{
         id: manageConnecion
@@ -41,10 +45,9 @@ App {
         }
     }
 
-
-
     Component.onCompleted: {
     }
+
 
     Rectangle{
             id:     container
@@ -83,6 +86,13 @@ App {
                         target:     mainLoader
                         source:     Qt.resolvedUrl("filePage.qml");
                     }
+                },
+                State{
+                    name: "listUsers"
+                    PropertyChanges {
+                        target:     mainLoader
+                        source:     Qt.resolvedUrl("listUserPage.qml");
+                    }
                 }
 
 
@@ -92,6 +102,11 @@ App {
                 container.state = "Login"
             }
         }
+
+
+
+
+
 
     Popup {
          id: popupDownload
@@ -122,7 +137,10 @@ App {
             }
             Button {
                 text:       "Download"
-                onClicked:  dowloadFile()
+                onClicked: {
+                    popupDownload.close();
+                    dowloadFile()
+                }
             }
             Button{
                 text:       "Cancel"
@@ -134,6 +152,7 @@ App {
 
     function dowloadFile(){
         console.log("click download")
-        manageConnecion.receive_File(_fileName, _fileSize);
+        //manageConnecion.receive_File(_fileName, _fileSize);
+        manageConnecion.receive_File_Save_Server(_fileName, _fileSize);
     }
 }
