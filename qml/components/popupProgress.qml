@@ -32,9 +32,6 @@ Popup
         to:                         100
     }
 
-    x: _positionX
-    y: _positionY
-
     Text {
         id: txtProgress
         anchors{

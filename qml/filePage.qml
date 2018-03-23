@@ -82,7 +82,7 @@ Page {
                 id:             imFile
                 width:          dp(25)
                 height:         dp(25)
-                defaultSource:  Qt.resolvedUrl("/media/veracrypt1/projects/QT_FileClient/image/file.jpg")
+                defaultSource:  Qt.resolvedUrl("qrc:qml/images/file.jpg")
                 anchors {
                     verticalCenter:     parent.verticalCenter
                     left:               parent.left
@@ -161,16 +161,16 @@ Page {
     }
 
 
-//    ProgressBar {
-//        id:                         progressbar
-//        anchors.bottom:             parent.bottom
-//        anchors.horizontalCenter:   parent.horizontalCenter
-//        width:                      parent.width * 0.6
-//        height:                     px(60)
-//        value:                      _presentProgress
-//        from:                       0
-//        to:                         100
-//    }
+    ProgressBar {
+        id:                         progressbar
+        anchors.bottom:             parent.bottom
+        anchors.horizontalCenter:   parent.horizontalCenter
+        width:                      parent.width * 0.6
+        height:                     px(60)
+        value:                      _presentProgress
+        from:                       0
+        to:                         100
+    }
 
 //    Text {
 //        id: txtProgress
