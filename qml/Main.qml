@@ -6,6 +6,7 @@ import managerConnecion 1.0
 import QtQuick.Controls 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
+
 import "src/lists"
 import "src/bars"
 import "src/buttons"
@@ -19,6 +20,8 @@ App {
     //  * Add plugins to monetize, analyze & improve your apps (available with the Pro Licenses)
     //licenseKey: "<generate one from https://v-play.net/licenseKey>"
 
+    id:       masterPage
+
     property string currentUser:            ""
     property string _userName:              ""
     property string _password:              ""
@@ -26,7 +29,8 @@ App {
     property string _receiver:              ""
     property string _fileName:              ""
     property string _fileSize:              ""
-    property bool   _isFileStransfer:       flase
+    property bool   _isFileStransfer:       false
+    property bool   _statusLogin:           false
 
     //FontLoader{ source: "qrc:/src/fonts/fontawesome-webfont.ttf"}
 
@@ -37,18 +41,42 @@ App {
     Connections {
         target: manageConnecion
         onSignal_Notify_Download: {
-           _sender      = sender
-           _receiver    = receiver
-           _fileName    = fileName
-           _fileSize    = fileSize
-           popupDownload.open();
+            _sender                 = sender
+            _receiver               = receiver
+            _fileName               = fileName
+            _fileSize               = fileSize
+            popupDownload.open();
+            //_isFileStransfer        = true
         }
     }
 
     Component.onCompleted: {
+        _isFileStransfer            = true
+        //_popupProgress.open();
     }
 
+    toolBar: Bar{
+        id: titleBar
 
+        leftComponent: Component{
+            ButtonDefault{
+                class_name: "bar dark clear"
+                text: "Back"
+                icon: FontAwesome.icons.fa_angle_left
+                opacity: stackView.depth > 1 ? 1 : 0
+                visible: opacity ? true : false
+                Behavior on opacity { NumberAnimation{} }
+                onClicked: {
+                    stackView.pop()
+                    titleBar.title = "FSHARE"
+                }
+            }
+        }
+        visible: _statusLogin
+        class_name: "header"
+        title: "FSHARE"
+    }
+/*
     Rectangle{
             id:     container
             width:  parent.width
@@ -102,10 +130,69 @@ App {
                 container.state = "Login"
             }
         }
+*/
+    ListModel {
+        id: pageModel
+        ListElement {
+            text: "Buttons Demo"
+            page: "pages/listUsersPage.qml"
+        }
+        ListElement {
+            text: "ListView Demo"
+            page: "src/examples/DefaultListPage.qml"
+        }
+        ListElement {
+            text: "ListView with icon Demo"
+            page: "src/examples/IconListPage.qml"
+        }
+        ListElement {
+            text: "Avatar ListView Demo"
+            page: "src/examples/AvatarListPage.qml"
+        }
+        ListElement {
+            text: "Thumnail ListView Demo"
+            page: "src/examples/ThumbnailListPage.qml"
+        }
+        ListElement {
+            text: "Button bar Demo"
+            page: "src/examples/ButtonBarPage.qml"
+        }
+        ListElement {
+            text: "Card"
+            page: "src/examples/CardPage.qml"
+        }
+    }
 
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        focus: true
+        Keys.onReleased: if (event.key === Qt.Key_Back && stackView.depth > 1) {
+                             stackView.pop();
+                             event.accepted = true;
+                         }
+        initialItem: Qt.resolvedUrl("login.qml")
 
+//        initialItem: Item {
+//            width: parent.width
+//            height: parent.height
+//            DefaultListView{
+//                model: pageModel
+//                anchors.fill: parent
+//                onItemClicked: {
+//                    stackView.push(Qt.resolvedUrl(item.page))
+//                    titleBar.title = item.text
+//                }
+//            }
+//        }
+    }
 
+    statusBar: Bar{
 
+        visible: _statusLogin;
+        class_name: "footer calm"
+        title: "Powered by Brexis and Kamhix"
+    }
 
 
     Popup {

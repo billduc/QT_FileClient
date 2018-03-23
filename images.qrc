@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/images/file.jpg</file>
+        <file>qml/images/down.png</file>
+        <file>qml/images/dookie.jpg</file>
+        <file>qml/images/nevermind.jpg</file>
+        <file>qml/images/siamese-dream.jpg</file>
+        <file>qml/images/blue-album.jpg</file>
+        <file>qml/images/license-to-ill.jpg</file>
+        <file>qml/images/venkman.jpg</file>
+        <file>qml/images/tully.jpg</file>
+        <file>qml/images/barrett.jpg</file>
+        <file>qml/images/stantz.jpg</file>
+        <file>qml/images/winston.jpg</file>
+        <file>qml/images/spengler.jpg</file>
+        <file>qml/images/slimer.jpg</file>
+        <file>qml/images/jpg.png</file>
+        <file>qml/images/icon.png</file>
+        <file>qml/images/folder.png</file>
+        <file>qml/images/newfile.png</file>
+        <file>qml/images/download-file.png</file>
+        <file>qml/images/json-file.png</file>
+        <file>qml/images/readjson.png</file>
+        <file>qml/images/mp3.png</file>
+        <file>qml/images/pdf.png</file>
+        <file>qml/images/png.png</file>
+        <file>qml/images/doc.png</file>
+        <file>qml/images/newfile1.png</file>
+        <file>qml/images/download.svg</file>
+        <file>qml/images/txt.png</file>
+        <file>qml/images/download.png</file>
+        <file>qml/images/add-page.png</file>
+        <file>qml/images/file.png</file>
+        <file>qml/images/checked.png</file>
+        <file>qml/images/cancel.png</file>
+    </qresource>
+</RCC>

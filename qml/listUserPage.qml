@@ -93,6 +93,7 @@ ApplicationWindow {
     }
 
     statusBar: Bar{
+        visible: false;
         class_name: "footer calm"
         title: "Powered by Brexis and Kamhix"
     }

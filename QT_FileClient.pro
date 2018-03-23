@@ -9,7 +9,8 @@ DEPLOYMENTFOLDERS += assetsFolder
 
 # Add more folders to ship with the application here
 
-RESOURCES += #    resources.qrc # uncomment for publishing
+RESOURCES += \ #    resources.qrc # uncomment for publishing
+    images.qrc
 
 LIBS += -L/usr/lib -lssl -lcrypto
 
@@ -42,8 +43,7 @@ SOURCES += main.cpp \
     resources/sf_user.cpp \
     resources/sf_file.cpp \
     resources/network/sf_core.cpp \
-    resources/network/sf_connection.cpp
-
+    resources/network/sf_connection.cpp \
 
 
 android {
@@ -54,7 +54,7 @@ android {
 ios {
     QMAKE_INFO_PLIST = ios/Project-Info.plist
     OTHER_FILES += $$QMAKE_INFO_PLIST
-    
+
 }
 
 # set application icons for win and macx
@@ -78,54 +78,7 @@ HEADERS += \
     header/sf_user.h \
     header/sf_file.h \
     resources/network/sf_core.h \
-    resources/network/sf_connection.h
+    resources/network/sf_connection.h \
 
-DISTFILES += \
-    qml/login.qml \
-    qml/userPage.qml \
-    qml/filePage.qml \
-    image/file.jpg \
-    image/add-page.png \
-    image/cancel.png \
-    image/checked.png \
-    image/doc.png \
-    image/down.png \
-    image/download-file.png \
-    image/download.png \
-    image/file.png \
-    image/folder.png \
-    image/icon.png \
-    image/jpg.png \
-    image/json-file.png \
-    image/mp3.png \
-    image/newfile.png \
-    image/newfile1.png \
-    image/pdf.png \
-    image/png.png \
-    image/readjson.png \
-    image/txt.png \
-    image/download.svg \
-    image/file.jpg \
-    image/txt.png \
-    image/readjson.png \
-    image/png.png \
-    image/pdf.png \
-    image/newfile1.png \
-    image/newfile.png \
-    image/mp3.png \
-    image/json-file.png \
-    image/jpg.png \
-    image/icon.png \
-    image/folder.png \
-    image/file.png \
-    image/download-file.png \
-    image/download.png \
-    image/down.png \
-    image/doc.png \
-    image/checked.png \
-    image/cancel.png \
-    image/add-page.png \
-    image/download.svg \
-    qml/MainPage.qml \
-    qml/listUserPage.qml \
-    qml/dialogFileTransferRequest.qml
+
+DISTFILES +=

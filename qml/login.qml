@@ -142,7 +142,6 @@ Page {
     }
 
     function loginManual(){
-        //Boolean check = manageConnecion.auth_Connection(txtUsername.text,txtPassword.text);
 
         if (manageConnecion.main_connectToServer("localhost","443.") )
             console.log("connection success");
@@ -155,11 +154,13 @@ Page {
         if ( manageConnecion.auth_Connection(txtUsername.text,txtPassword.text) == true){
             //container.state = qsTr("Master");
             //container.state = qsTr("User");
-            container.state = qsTr("listUsers");
-            _userName = txtUsername.text
-            _password = txtPassword.text
+            //container.state = qsTr("listUsers");
+            _userName       = txtUsername.text
+            _password       = txtPassword.text
+            _statusLogin    = true;
+            stackView.push(Qt.resolvedUrl("pages/listUsersPage.qml"))
         }
-        else{
+        else {
             console.log("login fail");
             statusLogin.text = "Invalid username or password.";
         }

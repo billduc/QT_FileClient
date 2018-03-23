@@ -288,7 +288,7 @@ Connection::send_File(std::string _filepatch){
 
         std::cout   << " ssl send ok "  << _count
                     << " : "            << si
-                    <<  " - "           << sizeof(_buffer)
+                    << " - "            << sizeof(_buffer)
                     << std::endl;
         ++_count;
         this->_numOfChunkComplete = i;

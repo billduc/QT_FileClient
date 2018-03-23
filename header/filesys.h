@@ -25,6 +25,11 @@
 #include <QThread>
 #include <QtNetwork>
 
+
+#define DEFAULT_PATCH                ""
+
+
+
 #define TRUE                        1
 #define FALSE                       0
 

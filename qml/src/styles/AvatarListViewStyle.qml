@@ -38,7 +38,7 @@ Item{
                     smooth: true
                     visible: false
                 }
-                Rectangle{
+                Rectangle {
                     id: mask
                     anchors.fill: parent
                     radius: StyleHelper.item_avatar_border_radius
