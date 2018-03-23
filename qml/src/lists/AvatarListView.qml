@@ -3,12 +3,18 @@ import QtQuick.Layouts 1.1
 import "../styles"
 import "../content"
 import "../variables/items.js" as StyleHelper
+
 List {
     id: rootList
     delegate:  Component{
         AvatarListViewStyle{
             root: rootList
-            onItemClicked: rootList.itemClicked(item, index)
+            onItemClicked: {
+                rootList.itemClicked(item, index)
+                currentUser = title
+                stackView.push(Qt.resolvedUrl("../../filePage.qml"))
+                _opacity = true
+            }
         }
     }
 }

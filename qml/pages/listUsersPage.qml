@@ -11,10 +11,13 @@ Page {
     AvatarListView{
         anchors.fill: parent
 
+
+
+
         model: ListModel {
             ListElement{
                 avatar: "qrc:qml/images/venkman.jpg"
-                title:"user2"
+                title: "user2"
                 detail: "Back off, man. I'm a scientist."
             }
             ListElement{

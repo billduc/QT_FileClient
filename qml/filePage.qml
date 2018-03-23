@@ -64,16 +64,6 @@ Page {
         }
     }
 
-    AppButton {
-        icon:                   IconType.backward
-        anchors.left:           parent.left
-        anchors.rightMargin:    dp(10)
-        anchors.bottom:         parent.bottom
-        anchors.bottomMargin:   dp(10)
-        onClicked: {
-            container.state = "User"
-        }
-    }
 
     AppListView {
         id:                 listFileUser
@@ -171,26 +161,26 @@ Page {
     }
 
 
-    ProgressBar {
-        id:                         progressbar
-        anchors.bottom:             parent.bottom
-        anchors.horizontalCenter:   parent.horizontalCenter
-        width:                      parent.width * 0.6
-        height:                     px(60)
-        value:                      _presentProgress
-        from:                       0
-        to:                         100
-    }
+//    ProgressBar {
+//        id:                         progressbar
+//        anchors.bottom:             parent.bottom
+//        anchors.horizontalCenter:   parent.horizontalCenter
+//        width:                      parent.width * 0.6
+//        height:                     px(60)
+//        value:                      _presentProgress
+//        from:                       0
+//        to:                         100
+//    }
 
-    Text {
-        id: txtProgress
-        anchors{
-            top:        progressbar.bottom
-            centerIn:   parent
-        }
+//    Text {
+//        id: txtProgress
+//        anchors{
+//            top:        progressbar.bottom
+//            centerIn:   parent
+//        }
 
-        text:           _presentProgress
-        font.pixelSize: px(15)
+//        text:           _presentProgress
+//        font.pixelSize: px(15)
 
-    }
+//    }
 }

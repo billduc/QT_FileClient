@@ -81,4 +81,5 @@ HEADERS += \
     resources/network/sf_connection.h \
 
 
-DISTFILES +=
+DISTFILES += \
+    qml/components/popupProgress.qml

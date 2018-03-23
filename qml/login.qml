@@ -157,7 +157,8 @@ Page {
             //container.state = qsTr("listUsers");
             _userName       = txtUsername.text
             _password       = txtPassword.text
-            _statusLogin    = true;
+            _statusLogin    = true
+            _opacity        = false
             stackView.push(Qt.resolvedUrl("pages/listUsersPage.qml"))
         }
         else {
