@@ -15,7 +15,6 @@ Page {
     property  var       username:           "user1"
     property  real      _presentProgress:   0
 
-
     Connections {
         target: manageConnecion
         onSignal_Update_Persent_Progress: {

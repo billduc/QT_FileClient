@@ -12,6 +12,7 @@ public:
 
 private:
     QString     _userName;
+    QString     _avatar;
     int         _status;
 
 };

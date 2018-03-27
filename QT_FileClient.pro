@@ -44,6 +44,7 @@ SOURCES += main.cpp \
     resources/sf_file.cpp \
     resources/network/sf_core.cpp \
     resources/network/sf_connection.cpp \
+    src/config/sf_config.cpp
 
 
 android {
@@ -79,7 +80,9 @@ HEADERS += \
     header/sf_file.h \
     resources/network/sf_core.h \
     resources/network/sf_connection.h \
+    src/config/sf_config.h
 
 
 DISTFILES += \
-    qml/components/popupProgress.qml
+    qml/components/popupProgress.qml \
+    qml/pages/listFilesPage.qml
